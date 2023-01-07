@@ -11,7 +11,9 @@ export default defineConfig({
     vue(),
     vueJsx(),
     Components({
-      resolvers: [VantResolver()],
+      dts: false,
+      // 不用手动注册组件,默认'src/compoenents'导出
+      resolvers: [VantResolver({ importStyle: false })],
     }),
   ],
   resolve: {

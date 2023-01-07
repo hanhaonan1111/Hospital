@@ -8,11 +8,11 @@ const instance = axios.create({
     timeout: 5000
 })
 
-let store = useUserStore()
+
 
 instance.interceptors.request.use(
     (config) => {
-
+        let store = useUserStore()
         let user = store.user
         if (user?.token && config.headers) {
             config.headers.Authorization = `Bearer ${store.user?.token}`
@@ -30,10 +30,11 @@ instance.interceptors.response.use(
             // await 拒绝的契约=>报错(try可以捕获)
             return Promise.reject('res.data')
         }
-        return res
+        return res.data
     },
     (err) => {
         // TODO 5. 处理401错误
+        let store = useUserStore()
         // 1.清除过期的用户数据
         store.clearUser()
         // 2.跳转页面,登陆成功之后,调回原来的路径
