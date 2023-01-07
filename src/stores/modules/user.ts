@@ -12,16 +12,12 @@ export const useUserStore = defineStore(
         const clearUser = () => {
             user.value = undefined;
         }
-
-
         return { user, setUserData, clearUser };
     },
     {
         persist: true,
     }
 )
-
-//   https://consult-api.itheima.net/login/password
 
 
 

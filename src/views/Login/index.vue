@@ -8,26 +8,56 @@
     />
 
     <div class="login-head">
-      <h3>密码登录</h3>
+      <h3>{{ current ? "密码" : "短信验证码" }}登录</h3>
       <a href="javascript:;">
-        <span>短信验证码登录</span>
+        <span @click="changeCur()"
+          >{{ !current ? "密码" : "短信验证码" }}登录</span
+        >
         <van-icon name="arrow"></van-icon>
       </a>
     </div>
     <!-- 表单 -->
-    <van-form @submit="Login">
+    <van-form @submit="Login" autocomplete="off">
       <van-field
         placeholder="请输入手机号"
         type="tel"
         v-model="formData.mobile"
         :rules="mobileRules"
+        ref="mobile"
       ></van-field>
+      <!-- 密码输入框 -->
       <van-field
+        v-model="formData.password"
         :rules="pwdRules"
         placeholder="请输入密码"
-        type="password"
-        v-model="formData.password"
-      ></van-field>
+        :type="openEye ? 'password' : 'text'"
+        v-if="current"
+      >
+        <template #button>
+          <van-icon name="eye-o" v-if="!openEye" @click="changeOpenEye" />
+          <van-icon name="closed-eye" v-else @click="changeOpenEye" />
+        </template>
+      </van-field>
+      <!-- 短信验证码输入框 -->
+
+      <van-field
+        v-model="formData.code"
+        placeholder="短信验证码"
+        v-else
+        :rules="codeRules"
+      >
+        <template #button>
+          <span
+            class="btn-send"
+            :class="timeCount > 0 ? 'active' : ''"
+            @click="Start()"
+            >{{
+              timeCount > 0 ? timeCount + "秒后重新发送" : "发送验证码"
+            }}</span
+          >
+        </template>
+      </van-field>
+
       <div class="cp-cell">
         <van-checkbox v-model="formData.agree">
           <span>我已同意</span>
@@ -57,11 +87,13 @@
 
 <script setup lang="ts">
 import router from "@/router";
-import { reactive } from "vue-demi";
-import { pwdRules, mobileRules } from "@/utils/loginRuls";
-import { showToast, Toast } from "vant";
-import { LoginByPwd } from "@/services/login";
+import { reactive, ref, watch } from "vue-demi";
+import { pwdRules, mobileRules, codeRules } from "@/utils/loginRuls";
+import { showSuccessToast, showToast, Toast } from "vant";
+import { LoginByCode, LoginByPwd } from "@/services/login";
 import { useUserStore } from "@/stores";
+import type { User } from "@/types/user";
+import { useTimerInterval } from "@/utils/useTimeOut";
 let userInfo = useUserStore();
 let onClickLeft = () => {
   // history 是默认自带来的
@@ -80,22 +112,56 @@ let formData = reactive({
   password: "",
   mobile: "",
   agree: true,
+  code: "",
 });
+let current = ref(true);
 let Login = async () => {
   let { agree } = formData;
   if (!agree) {
     showToast("请勾选用户协议");
     return;
   }
-  // 如果请求失败,请求拦截器会返回一个拒绝的Promise()
-  let { data } = await LoginByPwd({
-    password: formData.password,
-    mobile: formData.mobile,
-  });
+
+  let { data } = current.value
+    ? await LoginByPwd({
+        password: formData.password,
+        mobile: formData.mobile,
+      })
+    : await LoginByCode({
+        code: formData.code,
+        mobile: formData.mobile,
+      });
+
   userInfo.setUserData(data);
-  showToast("登录成功");
+  showSuccessToast("登录成功");
   router.push("/");
 };
+
+let changeCur = () => {
+  current.value = !current.value;
+  if (current.value) {
+    // 切换成密码
+    formData.code = "";
+  } else {
+    // 切换成验证码
+    formData.password = "";
+  }
+};
+let openEye = ref(true);
+let changeOpenEye = () => {
+  openEye.value = !openEye.value;
+};
+
+let { start, timeCount } = useTimerInterval();
+let mobile = ref();
+async function Start() {
+  if (mobile.value) {
+    let validate = await mobile.value.validate();
+    if (!validate) {
+      start(60);
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -152,6 +218,14 @@ let Login = async () => {
     &.active {
       color: rgba(22, 194, 163, 0.5);
     }
+  }
+}
+:deep() {
+  i {
+    transform: scale(1.5);
+  }
+  .van-icon-success {
+    transform: unset;
   }
 }
 </style>

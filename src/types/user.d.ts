@@ -9,3 +9,7 @@ export type params = {
     mobile: string,
     password: string
 }
+export type Codeparams = {
+    mobile: string,
+    code: string
+}
