@@ -32,7 +32,6 @@ let list = ref<HomeFiles>([] as HomeFiles);
 async function getList() {
   let { data } = await http.get<HomeFiles>("/patient/mylist");
   list.value = data;
-  console.log(list.value);
 }
 onMounted(() => {
   getList();
