@@ -44,6 +44,7 @@ router.beforeEach((to, from, next: (s?: | string) => void) => {
 router.afterEach((to) => {
   // 修改标题
   document.title = `天蓝医院-${to.meta.title || ''}`
+  //  进度条加载完毕
   NProgress.done()
 })
 export default router;
