@@ -9,7 +9,7 @@ NProgress.configure({
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/login', component: () => import('@/views/Login/index.vue') },
+    { path: '/login', component: () => import('@/views/Login/index.vue'), meta: { title: '登录页面' } },
     {
       path: '/',
       redirect: '/home',
@@ -37,8 +37,14 @@ router.beforeEach((to, from, next: (s?: | string) => void) => {
   // 既没有token,还要访问黑名单路由
   if (!token && whiteList.indexOf(path) === -1) {
     next('/login')
+  } else if (path === '/login' && token) {
+    next('/')
+  } else {
+    next()
   }
-  next()
+
+
+
 })
 // 路由的后置守卫
 router.afterEach((to) => {
