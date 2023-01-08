@@ -15,12 +15,24 @@
         <div class="tag">默认</div>
       </div>
 
-      <div class="patient-add">
+      <div class="patient-add" v-if="list.length < 6" @click="showRight = true">
         <Icon name="user-add" />
         <p>添加患者</p>
       </div>
       <div class="patient-tip">最多可添加 6 人</div>
     </div>
+
+    <van-popup
+      position="right"
+      v-model:show="showRight"
+      :style="{ width: '100%', height: '100%' }"
+    >
+      <nav-bar
+        title="添加患者"
+        rightText="保存"
+        @click-left="showRight = false"
+      ></nav-bar>
+    </van-popup>
   </div>
 </template>
 
@@ -33,12 +45,24 @@ async function getList() {
   let { data } = await http.get<HomeFiles>("/patient/mylist");
   list.value = data;
 }
+
 onMounted(() => {
   getList();
 });
+
+let showRight = ref(false);
 </script>
 
 <style lang="scss" scoped>
+.patient-page {
+  padding: 46px 0 80px;
+  :deep() {
+    .van-popup {
+      width: 80%;
+      height: 100%;
+    }
+  }
+}
 .patient-page {
   padding: 46px 0 80px;
 }
