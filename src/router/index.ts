@@ -1,5 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useUserStore } from '@/stores/index'
+import NProgress from 'nprogress'
+// 导入路由切换中的加载动画
+import 'nprogress/nprogress.css'
+NProgress.configure({
+  showSpinner: false
+})
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -9,18 +15,23 @@ const router = createRouter({
       redirect: '/home',
       component: () => import('@/views/Layout/index.vue'),
       children: [
-        { path: '/home', component: import('@/views/Home/index.vue') },
-        { path: '/article', component: import('@/views/Article/index.vue') },
-        { path: '/notify', component: import('@/views/Notify/index.vue') },
-        { path: '/user', component: import('@/views/User/index.vue') },
+        { path: '/home', component: import('@/views/Home/index.vue'), meta: { title: '首页' } },
+        { path: '/article', component: import('@/views/Article/index.vue'), meta: { title: '健康百科' } },
+        { path: '/notify', component: import('@/views/Notify/index.vue'), meta: { title: '消息通知' } },
+        {
+          path: '/user', component: import('@/views/User/index.vue'), meta: { title: '个人中心' }
+        },
       ]
     }
   ],
 });
 
-const whiteList = ['/login']  //白名单
-router.beforeEach((to, from, next) => {
+const whiteList = ['/login', '/register']  //白名单
+// 路由的前置守卫
+router.beforeEach((to, from, next: (s?: | string) => void) => {
+  NProgress.start()
   let { path } = to
+
   let { user } = useUserStore()
   let token = user?.token
   // 既没有token,还要访问黑名单路由
@@ -28,7 +39,11 @@ router.beforeEach((to, from, next) => {
     next('/login')
   }
   next()
-
-
+})
+// 路由的后置守卫
+router.afterEach((to) => {
+  // 修改标题
+  document.title = `天蓝医院-${to.meta.title || ''}`
+  NProgress.done()
 })
 export default router;
