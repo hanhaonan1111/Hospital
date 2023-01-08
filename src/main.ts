@@ -9,6 +9,9 @@ import "./styles/main.scss";
 const app = createApp(App);
 // store数据持久化存储
 app.use(pinia);
+// svg图标的支持
+import 'virtual:svg-icons-register'
+
 app.use(router);
 
 app.mount("#app");
