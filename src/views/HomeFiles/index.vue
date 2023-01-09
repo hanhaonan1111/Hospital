@@ -53,6 +53,7 @@ import addPatient from "./components/addPatient.vue";
 import { onMounted, reactive, ref } from "vue";
 import http from "@/utils/http";
 import { showToast } from "vant";
+import type { ToastWrapperInstance } from "vant/lib/toast/types";
 let list = ref<HomeFiles>([] as HomeFiles);
 
 async function getList() {
@@ -66,7 +67,11 @@ onMounted(() => {
 
 let showRight = ref(false);
 
-let addPatientRef = ref("");
+let addPatientRef = ref<{
+  onSave: () => Promise<boolean | ToastWrapperInstance>;
+}>({
+  onSave: () => Promise.resolve(false),
+});
 let defaultValue = reactive<Patient>({} as Patient);
 async function SaveData() {
   let res = await addPatientRef.value.onSave();

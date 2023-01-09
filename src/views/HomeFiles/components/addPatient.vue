@@ -34,6 +34,9 @@
       </template>
     </van-field>
   </van-form>
+  <van-action-bar>
+    <van-action-bar-button>删除</van-action-bar-button>
+  </van-action-bar>
 </template>
 
 <script setup lang="ts">
@@ -42,6 +45,7 @@ import { addPatientNameRules, addPatientIdcardRules } from "@/utils/loginRuls";
 import { addPatient, editPatient } from "@/services/user";
 import type { Patient } from "@/types/user";
 import { showToast } from "vant";
+import type { ToastWrapperInstance } from "vant/lib/toast/types";
 const options = [
   { label: "男", value: 1 },
   { label: "女", value: 0 },
@@ -82,24 +86,31 @@ async function onSave() {
       let { data } = await editPatient(form);
       return data.id ? true : showToast(data.message);
     } else {
-      // 添加接口
-      console.log(form);
-
       let { data } = await addPatient(form);
       return data.id ? true : showToast(data.message);
     }
   }
   return false;
 }
-defineExpose<{ onSave: () => Promise<boolean> }>({ onSave });
+defineExpose<{ onSave: () => Promise<boolean | ToastWrapperInstance> }>({
+  onSave,
+});
 function changeDef(cur: number) {
   form.defaultFlag = cur ? 1 : 0;
 }
 </script>
 
-<style scope>
+<style scope lang="scss">
 .submit {
   display: none;
+}
+.van-action-bar {
+  padding: 0 10px;
+  margin-bottom: 10px;
+  .van-button {
+    color: var(--cp-price);
+    background-color: var(--cp-bg);
+  }
 }
 </style>
 
