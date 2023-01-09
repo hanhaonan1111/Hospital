@@ -29,6 +29,12 @@
     }
 }
 
+
+.van-cell__value {
+    text-align: left
+}
+
+
 // 全局覆盖van-tab样式
 .van-tabs {
     .van-tabs__nav {

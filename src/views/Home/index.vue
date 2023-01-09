@@ -1,5 +1,13 @@
 <script setup lang="ts">
+import type { getArticalParams, KnowledgeType } from "@/types/home";
+import { reactive, ref, watch } from "vue-demi";
 import KnowledgeList from "./components/KnowledgeList.vue";
+import { getArticalList } from "@/services/home";
+let params = reactive<getArticalParams>({
+  type: "like",
+  current: 1,
+  pageSize: 10,
+});
 </script>
 
 <template>
@@ -74,13 +82,20 @@ import KnowledgeList from "./components/KnowledgeList.vue";
       </van-swipe-item>
     </van-swipe>
   </div>
-  <van-tabs shrink sticky>
-    <van-tab title="关注">
-      <KnowledgeList />
+  <van-tabs shrink sticky v-model:active="params.type">
+    <van-tab title="关注" name="like">
+      <!-- 每一次调用组件,都会产生独立的作用域. 互不干扰 数据独立使用-->
+      <KnowledgeList type="like" />
     </van-tab>
-    <van-tab title="推荐">2</van-tab>
-    <van-tab title="减脂">3</van-tab>
-    <van-tab title="饮食">4</van-tab>
+    <van-tab title="推荐" name="recommend">
+      <KnowledgeList type="recommend" />
+    </van-tab>
+    <van-tab title="减脂" name="fatReduction">
+      <KnowledgeList type="fatReduction" />
+    </van-tab>
+    <van-tab title="饮食" name="food">
+      <KnowledgeList type="food" />
+    </van-tab>
   </van-tabs>
 </template>
 
