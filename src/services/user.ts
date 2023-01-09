@@ -10,3 +10,6 @@ export const addPatient = async (params: Patient) => {
 export const editPatient = async (params: Patient) => {
     return await http.put<{ id?: string, message: string }>('/patient/update', params)
 }
+export const delPatient = async (id: string) => {
+    return await http.delete<{ data?: { id?: string }, message: string }>('/patient/del/' + id)
+}

@@ -42,6 +42,7 @@
         :defaultValue="defaultValue"
         :show="showRight"
         ref="addPatientRef"
+        @changeBox="changeBox"
       />
     </van-popup>
   </div>
@@ -90,6 +91,10 @@ let showEditBox = (v: Patient) => {
 function addBox() {
   showRight.value = true;
   defaultValue = {} as Patient;
+}
+function changeBox() {
+  showRight.value = false;
+  getList();
 }
 </script>
 

@@ -34,25 +34,29 @@
       </template>
     </van-field>
   </van-form>
-  <van-action-bar>
-    <van-action-bar-button>删除</van-action-bar-button>
+  <van-action-bar v-if="defaultValue.id">
+    <van-action-bar-button
+      @click="deltePatient(defaultValue.id ? defaultValue.id : '')"
+      >删除</van-action-bar-button
+    >
   </van-action-bar>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from "vue";
 import { addPatientNameRules, addPatientIdcardRules } from "@/utils/loginRuls";
-import { addPatient, editPatient } from "@/services/user";
+import { addPatient, delPatient, editPatient } from "@/services/user";
 import type { Patient } from "@/types/user";
-import { showToast } from "vant";
+import { showConfirmDialog, showToast } from "vant";
 import type { ToastWrapperInstance } from "vant/lib/toast/types";
+
 const options = [
   { label: "男", value: 1 },
   { label: "女", value: 0 },
 ];
 
 let props = defineProps<{ show: boolean; defaultValue: Patient }>();
-
+const emit = defineEmits<{ (e: "changeBox"): void }>();
 let form = reactive<Patient>({
   name: props.defaultValue?.name || "",
   idCard: props.defaultValue?.idCard || "",
@@ -97,6 +101,13 @@ defineExpose<{ onSave: () => Promise<boolean | ToastWrapperInstance> }>({
 });
 function changeDef(cur: number) {
   form.defaultFlag = cur ? 1 : 0;
+}
+function deltePatient(id: string) {
+  showConfirmDialog({ title: "你确定要删除患者信息吗?" }).then(async () => {
+    await delPatient(id);
+    showToast("删除成功");
+    emit("changeBox");
+  });
 }
 </script>
 
