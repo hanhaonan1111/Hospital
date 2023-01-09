@@ -43,12 +43,11 @@ export type UserInfo = Omit<User, 'token'> & {
 }
 
 export type Patient = {
-    id: string
     name: string
     idCard: string
     defaultFlag: 0 | 1
     gender: 0 | 1
-    genderValue: string
-    age: number
 }
 export type HomeFiles = Array<Patient>
+
+

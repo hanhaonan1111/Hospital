@@ -30,17 +30,22 @@
       <nav-bar
         title="添加患者"
         rightText="保存"
+        @on-click-right="SaveData"
         @click-left="showRight = false"
       ></nav-bar>
+      <!-- 添加患者 -->
+      <addPatient v-if="showRight" :show="showRight" ref="addPatientRef" />
     </van-popup>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { HomeFiles } from "@/types/user";
+import addPatient from "./components/addPatient.vue";
 import { onMounted, ref } from "vue";
 import http from "@/utils/http";
 let list = ref<HomeFiles>([] as HomeFiles);
+
 async function getList() {
   let { data } = await http.get<HomeFiles>("/patient/mylist");
   list.value = data;
@@ -51,6 +56,14 @@ onMounted(() => {
 });
 
 let showRight = ref(false);
+let addPatientRef = ref("");
+async function SaveData() {
+  let res = await addPatientRef.value.onSave();
+  console.log(res, "RES");
+  if (res) {
+    showRight.value = false;
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -58,8 +71,10 @@ let showRight = ref(false);
   padding: 46px 0 80px;
   :deep() {
     .van-popup {
-      width: 80%;
+      width: 100%;
       height: 100%;
+      padding-top: 46px;
+      box-sizing: border-box;
     }
   }
 }

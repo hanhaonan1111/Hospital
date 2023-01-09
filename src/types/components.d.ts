@@ -8,5 +8,6 @@ declare module 'vue' {
         NavBar: typeof NavBar,
         Icon: typeof Icon,
         RadioBtn: typeof RadioBtn
+        addPatient: typeof addPatient
     }
 }
