@@ -46,7 +46,10 @@ export type Patient = {
     name: string
     idCard: string
     defaultFlag: 0 | 1
-    gender: 0 | 1
+    gender: 0 | 1,
+    age?: number,
+    genderValue?: string
+    id?: string | undefined
 }
 export type HomeFiles = Array<Patient>
 

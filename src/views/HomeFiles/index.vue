@@ -11,11 +11,14 @@
           <span>{{ v.gender !== 0 ? "男" : "女" }}</span>
           <span>{{ v.age }}岁</span>
         </div>
-        <div class="icon"><Icon name="user-edit" /></div>
-        <div class="tag">默认</div>
+        <div class="icon">
+          <Icon name="user-edit" @click="showEditBox(v)" />
+        </div>
+
+        <div class="tag" v-if="v.defaultFlag === 1">默认</div>
       </div>
 
-      <div class="patient-add" v-if="list.length < 6" @click="showRight = true">
+      <div class="patient-add" v-if="list.length < 6" @click="addBox">
         <Icon name="user-add" />
         <p>添加患者</p>
       </div>
@@ -27,23 +30,29 @@
       v-model:show="showRight"
       :style="{ width: '100%', height: '100%' }"
     >
-      <nav-bar
+      <NavBar
         title="添加患者"
         rightText="保存"
-        @on-click-right="SaveData"
+        @click-right="SaveData"
         @click-left="showRight = false"
-      ></nav-bar>
+      ></NavBar>
       <!-- 添加患者 -->
-      <addPatient v-if="showRight" :show="showRight" ref="addPatientRef" />
+      <addPatient
+        v-if="showRight"
+        :defaultValue="defaultValue"
+        :show="showRight"
+        ref="addPatientRef"
+      />
     </van-popup>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { HomeFiles } from "@/types/user";
+import type { HomeFiles, Patient } from "@/types/user";
 import addPatient from "./components/addPatient.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import http from "@/utils/http";
+import { showToast } from "vant";
 let list = ref<HomeFiles>([] as HomeFiles);
 
 async function getList() {
@@ -56,13 +65,26 @@ onMounted(() => {
 });
 
 let showRight = ref(false);
+
 let addPatientRef = ref("");
+let defaultValue = reactive<Patient>({} as Patient);
 async function SaveData() {
   let res = await addPatientRef.value.onSave();
-  console.log(res, "RES");
   if (res) {
+    let msg = defaultValue ? "修改成功!" : "添加成功!";
+    showToast(msg);
+    getList();
     showRight.value = false;
   }
+}
+
+let showEditBox = (v: Patient) => {
+  showRight.value = true;
+  defaultValue = v;
+};
+function addBox() {
+  showRight.value = true;
+  defaultValue = {} as Patient;
 }
 </script>
 

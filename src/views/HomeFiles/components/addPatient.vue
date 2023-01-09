@@ -28,7 +28,7 @@
         <van-checkbox
           :icon-size="18"
           round
-          :model-value="form.defaultFlag === 0 ? true : false"
+          :model-value="form.defaultFlag === 1 ? true : false"
           @update:model-value="changeDef"
         />
       </template>
@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from "vue";
 import { addPatientNameRules, addPatientIdcardRules } from "@/utils/loginRuls";
-import { addPatient } from "@/services/user";
+import { addPatient, editPatient } from "@/services/user";
 import type { Patient } from "@/types/user";
 import { showToast } from "vant";
 const options = [
@@ -47,13 +47,14 @@ const options = [
   { label: "女", value: 0 },
 ];
 
-let props = defineProps<{ show: boolean }>();
+let props = defineProps<{ show: boolean; defaultValue: Patient }>();
 
 let form = reactive<Patient>({
-  name: "",
-  idCard: "",
-  gender: 1,
-  defaultFlag: 1,
+  name: props.defaultValue?.name || "",
+  idCard: props.defaultValue?.idCard || "",
+  gender: props.defaultValue?.gender || 1,
+  defaultFlag: props.defaultValue?.defaultFlag || 0,
+  id: props.defaultValue?.id || undefined,
 });
 let current = ref(0);
 
@@ -77,19 +78,22 @@ let addForm = ref();
 async function onSave() {
   let validate = await addForm.value.validate();
   if (!validate) {
-    let { data } = await addPatient(form);
-    if (data.id) {
-      // 关闭对话框
-      return true;
+    if (props.defaultValue.id) {
+      let { data } = await editPatient(form);
+      return data.id ? true : showToast(data.message);
     } else {
-      showToast(data.message);
+      // 添加接口
+      console.log(form);
+
+      let { data } = await addPatient(form);
+      return data.id ? true : showToast(data.message);
     }
   }
   return false;
 }
 defineExpose<{ onSave: () => Promise<boolean> }>({ onSave });
 function changeDef(cur: number) {
-  form.defaultFlag = cur ? 0 : 1;
+  form.defaultFlag = cur ? 1 : 0;
 }
 </script>
 

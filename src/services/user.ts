@@ -6,3 +6,7 @@ import type { Patient } from '@/types/user'
 export const addPatient = async (params: Patient) => {
     return await http.post<{ id?: string, message: string }>('/patient/add', params)
 }
+
+export const editPatient = async (params: Patient) => {
+    return await http.put<{ id?: string, message: string }>('/patient/update', params)
+}
