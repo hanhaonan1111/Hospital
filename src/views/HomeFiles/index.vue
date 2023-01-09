@@ -1,6 +1,6 @@
 <template>
   <div class="patient-page">
-    <NavBar title="家庭档案" />
+    <NavBar title="家庭档案" @click-left="LeftClick" />
     <div class="patient-list">
       <div class="patient-item" v-for="(v, i) in list" :key="i">
         <div class="info">
@@ -55,6 +55,7 @@ import { onMounted, reactive, ref } from "vue";
 import http from "@/utils/http";
 import { showToast } from "vant";
 import type { ToastWrapperInstance } from "vant/lib/toast/types";
+import router from "@/router";
 let list = ref<HomeFiles>([] as HomeFiles);
 
 async function getList() {
@@ -68,6 +69,9 @@ onMounted(() => {
 
 let showRight = ref(false);
 
+function LeftClick() {
+  router.back();
+}
 let addPatientRef = ref<{
   onSave: () => Promise<boolean | ToastWrapperInstance>;
 }>({
