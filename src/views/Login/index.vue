@@ -87,7 +87,7 @@
 
 <script setup lang="ts">
 import router from "@/router";
-import { reactive, ref, watch } from "vue-demi";
+import { reactive, ref, watch } from "vue";
 import { pwdRules, mobileRules, codeRules } from "@/utils/loginRuls";
 import { showSuccessToast, showToast, Toast } from "vant";
 import { LoginByCode, LoginByPwd } from "@/services/login";

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, onMounted, ref } from "vue-demi";
+import { onBeforeMount, onMounted, ref } from "vue";
 import http from "@/utils/http";
 import type { UserInfo } from "@/types/user";
 import { tools } from "@/composable/const";

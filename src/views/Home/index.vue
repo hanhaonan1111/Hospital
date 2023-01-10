@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { getArticalParams, KnowledgeType } from "@/types/home";
-import { reactive, ref, watch } from "vue-demi";
+import { reactive, ref, watch } from "vue";
 import KnowledgeList from "./components/KnowledgeList.vue";
 import { getArticalList } from "@/services/home";
 import FollowDoctor from "./components/FollowDoctor.vue";

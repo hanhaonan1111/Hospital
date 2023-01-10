@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { ref, computed } from "vue";
 import DoctorCard from "./DoctorCard.vue";
-let width = ref(0);
+import { useWindowSize } from "@vueuse/core";
+let { width } = useWindowSize();
 
-onMounted(() => {
-  width.value = (150 / 375) * window.screen.width;
-  window.addEventListener("resize", (e: any) => {
-    width.value = (150 / 375) * e.currentTarget.innerWidth;
-  });
+let useWith = computed(() => {
+  return width.value * (150 / 375);
 });
 </script>
 
@@ -18,7 +16,7 @@ onMounted(() => {
       <a href="javascript:;"> 查看更多<i class="van-icon van-icon-arrow" /></a>
     </div>
     <div class="body">
-      <van-swipe :loop="false" :show-indicators="false" :width="width">
+      <van-swipe :loop="false" :show-indicators="false" :width="useWith">
         <van-swipe-item v-for="item in 8" :key="item">
           <DoctorCard></DoctorCard>
         </van-swipe-item>
