@@ -3,6 +3,7 @@ import type { getArticalParams, KnowledgeType } from "@/types/home";
 import { reactive, ref, watch } from "vue-demi";
 import KnowledgeList from "./components/KnowledgeList.vue";
 import { getArticalList } from "@/services/home";
+import FollowDoctor from "./components/FollowDoctor.vue";
 let params = reactive<getArticalParams>({
   type: "like",
   current: 1,
@@ -14,7 +15,7 @@ let params = reactive<getArticalParams>({
   <div class="user-page">
     <div class="home-header">
       <div class="con">
-        <h1>优医</h1>
+        <h1>天蓝医院</h1>
         <div class="search">
           <Icon name="home-search" /> 搜一搜：疾病/症状/医生/健康知识
         </div>
@@ -85,6 +86,7 @@ let params = reactive<getArticalParams>({
   <van-tabs shrink sticky v-model:active="params.type">
     <van-tab title="关注" name="like">
       <!-- 每一次调用组件,都会产生独立的作用域. 互不干扰 数据独立使用-->
+      <FollowDoctor />
       <KnowledgeList type="like" />
     </van-tab>
     <van-tab title="推荐" name="recommend">

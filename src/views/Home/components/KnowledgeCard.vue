@@ -19,7 +19,9 @@ let { item } = defineProps<{ item: Knowledge }>();
           {{ item.creatorTitles }}
         </p>
       </div>
-      <van-button class="btn" size="small" round>+ 关注</van-button>
+      <van-button class="btn" size="small" round>
+        {{ item.likeFlag === 1 ? "已关注" : "+ 关注" }}
+      </van-button>
     </div>
     <div class="body">
       <h3 class="title van-ellipsis">
