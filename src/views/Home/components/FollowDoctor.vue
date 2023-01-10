@@ -3,13 +3,12 @@ import { onMounted, ref, watch } from "vue";
 import DoctorCard from "./DoctorCard.vue";
 let width = ref(0);
 
-watch(
-  () => window.screen,
-  () => {
-    width.value = (150 / 375) * window.screen.width;
-  },
-  { immediate: true, deep: true }
-);
+onMounted(() => {
+  width.value = (150 / 375) * window.screen.width;
+  window.addEventListener("resize", (e: any) => {
+    width.value = (150 / 375) * e.currentTarget.innerWidth;
+  });
+});
 </script>
 
 <template>
