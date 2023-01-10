@@ -1,19 +1,22 @@
 <script lang="ts" setup>
 import { followDoc } from "@/services/home";
 import type { Doctor } from "@/types/home";
-import { ref } from "vue";
-defineProps<{ detail: Doctor }>();
+import { ref, toRef, watch } from "vue";
+import { useFatch } from "@/composable/index";
+let props = defineProps<{ detail: Doctor }>();
 let emit = defineEmits<{ (e: "asyncGetList"): void }>();
-let clicked = ref(false);
-let load = ref(false);
-async function followDoctor(id: string) {
-  load.value = true;
-  clicked.value = !clicked.value;
-  await followDoc({
-    type: "doc",
-    id,
+
+let click = ref(props.detail.likeFlag);
+
+let { load, fetch } = useFatch();
+watch([load], () => {
+  console.log(load, "load");
+});
+async function followDoctor(item: any) {
+  await fetch(() => {
+    return followDoc({ type: "doc", id: item.id });
   });
-  load.value = false;
+  click.value = click.value === 1 ? 0 : 1;
 }
 </script>
 <template>
@@ -26,14 +29,12 @@ async function followDoctor(id: string) {
       round
       size="small"
       type="primary"
-      @click="followDoctor(detail.id)"
+      @click="followDoctor(detail)"
       :disabled="load"
     >
-      <van-loading size="20" type="spinner" color="white" v-if="load" />
-      <span v-else>{{
-        clicked === false ? "+ 关注" : "已关注"
-      }}</span></van-button
-    >
+      <van-loading v-if="load" size="20" type="spinner" color="white" />
+      <span v-else>{{ click === 0 ? "+ 关注" : "已关注" }}</span>
+    </van-button>
   </div>
 </template>
 <style scoped lang="scss" >
