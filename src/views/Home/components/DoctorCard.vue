@@ -9,9 +9,7 @@ let emit = defineEmits<{ (e: "asyncGetList"): void }>();
 let click = ref(props.detail.likeFlag);
 
 let { load, fetch } = useFatch();
-watch([load], () => {
-  console.log(load, "load");
-});
+
 async function followDoctor(item: any) {
   await fetch(() => {
     return followDoc({ type: "doc", id: item.id });

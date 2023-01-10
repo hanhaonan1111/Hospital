@@ -1,7 +1,6 @@
 import { defineStore } from "pinia"
-import type { params, User } from "@/types/user"
+import type { User } from "@/types/user"
 import { ref } from "vue"
-import http from '@/utils/http'
 export const useUserStore = defineStore(
     "Hispital_User",
     () => {

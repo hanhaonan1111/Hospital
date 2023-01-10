@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type { getArticalParams, KnowledgeType } from "@/types/home";
-import { reactive, ref, watch } from "vue";
+import type { getArticalParams } from "@/types/home";
+import { reactive } from "vue";
 import KnowledgeList from "./components/KnowledgeList.vue";
 import { getArticalList } from "@/services/home";
 import FollowDoctor from "./components/FollowDoctor.vue";
+
 let params = reactive<getArticalParams>({
   type: "like",
   current: 1,

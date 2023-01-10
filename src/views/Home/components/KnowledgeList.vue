@@ -25,7 +25,6 @@ const loading = ref(false);
 const finished = ref(false);
 
 let props = defineProps<{ type: KnowledgeType }>();
-console.log(props.type, "Type");
 
 let params = reactive<getArticalParams>({
   type: props.type,
