@@ -1,7 +1,17 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import { useFatch } from "@/composable";
 import type { Knowledge } from "@/types/home";
+import { followKnow } from "@/services/home";
 
 let { item } = defineProps<{ item: Knowledge }>();
+let click = ref(item.likeFlag);
+let { load, fetch } = useFatch();
+
+async function changeFllow(id: string) {
+  await fetch(() => followKnow({ type: "knowledge", id }));
+  click.value = click.value === 1 ? 0 : 1;
+}
 </script>
 
 <template>
@@ -19,8 +29,15 @@ let { item } = defineProps<{ item: Knowledge }>();
           {{ item.creatorTitles }}
         </p>
       </div>
-      <van-button class="btn" size="small" round>
-        {{ item.likeFlag === 1 ? "已关注" : "+ 关注" }}
+      <van-button
+        class="btn"
+        size="small"
+        round
+        @click="changeFllow(item.id)"
+        :disabled="load === true"
+      >
+        <van-loading v-if="load" size="20" type="spinner" color="green" />
+        <span v-else> {{ click === 1 ? "已关注" : "+ 关注" }}</span>
       </van-button>
     </div>
     <div class="body">

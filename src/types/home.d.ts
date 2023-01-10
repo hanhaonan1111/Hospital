@@ -95,11 +95,11 @@ export type DoctorPage = {
 
 }
 
-
+type Type = "doc" | 'knowledge'
 //(入参) 关注医生
 export type followDoc = {
     id: string
-    type: "doc"
+    type: Type
 }
 //(出参) 关注医生
 export type followDocRes = {

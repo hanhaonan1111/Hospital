@@ -1,4 +1,7 @@
-import type { getArticalParams, KnowledgePage, PageParams, DoctorPage, followDoc, followDocRes } from '@/types/home'
+import type {
+    getArticalParams, KnowledgePage, PageParams,
+    DoctorPage, followDoc, followDocRes
+} from '@/types/home'
 import http from '@/utils/http'
 
 export function getArticalList(params: getArticalParams) {
@@ -19,5 +22,8 @@ export function getDoctorList(params: PageParams) {
 }
 
 export function followDoc(data: followDoc) {
+    return http<any, followDocRes>({ url: '/like', method: "POST", data })
+}
+export function followKnow(data: followDoc) {
     return http<any, followDocRes>({ url: '/like', method: "POST", data })
 }
