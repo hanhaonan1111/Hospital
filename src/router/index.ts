@@ -31,9 +31,13 @@ const router = createRouter({
     {
       path: '/consult/fast',
       component: import('@/views/Consult/ConsultFast.vue'),
-      meta: { title: '激素问诊' },
-    }
-
+      meta: { title: '极速问诊' },
+    },
+    {
+      path: '/consult/dep',
+      component: import('@/views/Consult/ConsultDepartment.vue'),
+      meta: { title: '选择科室' },
+    },
   ],
 });
 
