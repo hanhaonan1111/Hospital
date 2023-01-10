@@ -94,3 +94,17 @@ export type DoctorPage = {
     message: string
 
 }
+
+
+//(入参) 关注医生
+export type followDoc = {
+    id: string
+    type: "doc"
+}
+//(出参) 关注医生
+export type followDocRes = {
+    data?: { id: string }
+    code: number
+    message: string
+}
+

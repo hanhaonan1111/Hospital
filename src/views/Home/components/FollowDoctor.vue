@@ -34,7 +34,7 @@ onBeforeMount(() => {
     <div class="body">
       <van-swipe :loop="false" :show-indicators="false" :width="useWith">
         <van-swipe-item v-for="item in doctorList" :key="item.id">
-          <DoctorCard :detail="item"></DoctorCard>
+          <DoctorCard :detail="item" @asyncGetList="asyncGetList"></DoctorCard>
         </van-swipe-item>
       </van-swipe>
     </div>
