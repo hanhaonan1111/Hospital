@@ -38,6 +38,11 @@ const router = createRouter({
       component: import('@/views/Consult/ConsultDepartment.vue'),
       meta: { title: '选择科室' },
     },
+    {
+      path: '/consult/illness',
+      component: import('@/views/Consult/ConsultDescription.vue'),
+      meta: { title: '图文问诊' },
+    },
   ],
 });
 
