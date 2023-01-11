@@ -4,7 +4,7 @@ import router from "@/router";
 import { uploadImg } from "@/services/consult";
 import { useConsultStore } from "@/stores/index";
 import type { Img, PartialConsult } from "@/types/consult";
-import { showFailToast } from "vant";
+import { showFailToast, showToast } from "vant";
 import type { UploaderAfterRead } from "vant/lib/uploader/types";
 
 import { reactive, watch, ref, computed } from "vue";
@@ -43,17 +43,26 @@ let GoHospital = [
     value: 0,
   },
 ];
-let form = reactive<PartialConsult>({});
 let OtherData = reactive<PartialConsult>({
+  illnessDesc: undefined,
   illnessTime: undefined,
   consultFlag: undefined,
   pictures: [],
 });
 let fileList = ref([]);
-
+watch(
+  () => OtherData.illnessDesc,
+  () => {
+    console.log(OtherData.illnessDesc, "OtherData.illnessDesc");
+  }
+);
 let disabled = computed(() => {
+  console.log(OtherData.illnessDesc, "disabled");
   return (
-    OtherData.illnessTime !== undefined && OtherData.consultFlag !== undefined
+    OtherData.illnessTime !== undefined &&
+    OtherData.consultFlag !== undefined &&
+    OtherData.illnessDesc !== undefined &&
+    OtherData.illnessDesc !== ""
   );
 });
 
@@ -80,6 +89,13 @@ function onDeleteImg(e: File, i: { name: string; index: number }) {
 }
 let next = () => {
   // 下一步
+  if (!OtherData.illnessDesc) {
+    return showToast("请填写您的病情!");
+  } else if (!OtherData.consultFlag) {
+    return showToast("请选择是否就诊过");
+  } else if (!OtherData.illnessTime) {
+    return showToast("请选择患病时间");
+  }
   store.updateData({ ...OtherData });
   console.log(store.params);
 };
@@ -107,7 +123,7 @@ let next = () => {
         type="textarea"
         rows="3"
         placeholder="请详细描述您的病情，病情描述不能为空"
-        v-model="form.illnessDesc"
+        v-model="OtherData.illnessDesc"
       ></van-field>
 
       <div class="item">
@@ -147,7 +163,9 @@ let next = () => {
         type="primary"
         block
         round
-        :class="{ disabled: disabled === false }"
+        :class="{
+          disabled: disabled === false,
+        }"
         @click="next"
         >下一步</van-button
       >
