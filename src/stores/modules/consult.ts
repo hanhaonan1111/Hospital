@@ -12,5 +12,5 @@ export const useConsultStore = defineStore('SkyBlue_Consult', () => {
     function clearData() {
         params.value = {}
     }
-    return { params, updateData }
+    return { params, updateData, clearData }
 }, { persist: true })  

@@ -1,5 +1,5 @@
 import type {
-    ResAllDepartmentData, Img, ParamsPay, PesPayData
+    ResAllDepartmentData, Img, ParamsPay, PesPayData, PartialConsult, payImmediate
 } from '@/types/consult'
 import type { Patient } from '@/types/user'
 import http from '@/utils/http'
@@ -27,5 +27,13 @@ export function PreOrder(query: ParamsPay) {
 
 export function findPatientById(id: string) {
     return http.get<Patient>('/patient/info/' + id)
+}
 
+export function getOrderId(data: PartialConsult) {
+    return http.post<{ id: string }>('/patient/consult/order', data)
+}
+
+// 支付[入参]
+export function payImmediateParams(query: payImmediate) {
+    return http.post<{ payUrl: string }>('/patient/consult/pay', query)
 }

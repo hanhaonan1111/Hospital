@@ -1,11 +1,19 @@
 <script setup lang="ts">
-import { findPatientById, PreOrder as PreOrderApi } from "@/services/consult";
+import {
+  findPatientById,
+  getOrderId,
+  payImmediateParams,
+  PreOrder as PreOrderApi,
+} from "@/services/consult";
 import { onMounted, ref } from "vue";
 import { useConsultStore } from "@/stores/index";
 import type { Patient } from "@/types/user";
 import { Gender } from "@/enums/consult";
-import { showToast, Toast } from "vant";
-let { params } = useConsultStore();
+import { showConfirmDialog, showDialog, showToast, Toast } from "vant";
+import router from "@/router";
+import { onBeforeRouteLeave } from "vue-router";
+
+let { params, clearData } = useConsultStore();
 let actual = ref(0);
 async function payOrder() {
   let query = { type: params.type!, illnessType: params.illnessType };
@@ -18,16 +26,68 @@ async function getPatientData() {
   patientInfo.value = { ...data };
 }
 onMounted(() => {
+  if (
+    params.type === undefined ||
+    params.illnessType === undefined ||
+    params.illnessDesc === undefined
+  ) {
+    // 页面缺少必要的参数,不能正常渲染
+    showDialog({
+      title: "温馨提示",
+      message: "订单部分参数丢失,请重新填写问诊信息!",
+    }).then(() => {
+      router.push("/");
+    });
+
+    return;
+  }
   payOrder();
   getPatientData();
 });
 
 let aggree = ref(true);
-
-function goPayOrder() {
+let payBox = ref(false);
+let orderId = ref<undefined | string>();
+async function goPayOrder() {
   if (!aggree.value) {
     return showToast("请勾选用户协议!");
   }
+  // 生成订单ID
+  let { data } = await getOrderId(params);
+  orderId.value = data.id;
+  // 选择支付方式
+  payBox.value = true;
+  // 清除清单之前保存的信息
+  clearData();
+}
+
+let beforeClose = () => {
+  showConfirmDialog({
+    title: "关闭支付提示",
+    message: "取消支付将无法前往问诊,您确定要关闭吗?",
+    confirmButtonText: "仍要取消",
+    confirmButtonColor: "red",
+    cancelButtonText: "继续支付",
+  }).then(() => {
+    orderId.value = undefined;
+    router.replace("/user/consult");
+  });
+  return false;
+};
+onBeforeRouteLeave(() => {
+  if (orderId.value !== undefined) {
+    return false;
+  }
+});
+let payType = ref(true);
+async function payNowImmediate() {
+  let { data } = await payImmediateParams({
+    paymentMethod: 1,
+    orderId: orderId.value!,
+    payCallback: "http://localhost:5173/room",
+  });
+  let url = data.payUrl;
+  location.href = url;
 }
 </script>
 
@@ -70,15 +130,60 @@ function goPayOrder() {
     </div>
     <van-submit-bar
       button-type="primary"
-      :price="2900"
+      :price="actual * 100"
       button-text="立即支付"
       text-align="left"
       @click="goPayOrder"
     />
   </div>
+  <van-action-sheet
+    v-model:show="payBox"
+    title="选择支付方式"
+    :closeable="false"
+    :before-close="beforeClose"
+    :close-on-popstate="false"
+  >
+    <div class="pay-type">
+      <p class="amount">￥{{ actual }}</p>
+      <van-cell-group>
+        <van-cell title="支付宝支付">
+          <template #icon><Icon name="consult-alipay" /></template>
+          <template #extra
+            ><van-checkbox :disabled="true" v-model="payType"
+          /></template>
+        </van-cell>
+      </van-cell-group>
+      <div class="btn">
+        <van-button type="primary" round block @click="payNowImmediate"
+          >立即支付</van-button
+        >
+      </div>
+    </div>
+  </van-action-sheet>
 </template>
 
 <style lang="scss" scoped>
+.pay-type {
+  .amount {
+    padding: 20px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  .btn {
+    padding: 15px;
+  }
+  .van-cell {
+    align-items: center;
+    .cp-icon {
+      margin-right: 10px;
+      font-size: 18px;
+    }
+    .van-checkbox :deep(.van-checkbox__icon) {
+      font-size: 16px;
+    }
+  }
+}
 ::v-deep() {
   .van-submit-bar__button {
     font-weight: normal;

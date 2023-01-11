@@ -67,3 +67,10 @@ export type PesPayData = {
 export type PesPay = {
     data: PesPayData
 }
+
+// 支付[入参]
+export type payImmediate = {
+    paymentMethod: 1,
+    orderId: string
+    payCallback: string
+}

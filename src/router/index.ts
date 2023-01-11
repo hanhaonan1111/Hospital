@@ -51,7 +51,7 @@ const router = createRouter({
     {
       path: '/consult/pay',
       component: import('@/views/Consult/ConsultPay.vue'),
-      meta: { title: '支付问诊' },
+      meta: { title: '支付' },
     },
 
   ],
