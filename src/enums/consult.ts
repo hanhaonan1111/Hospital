@@ -29,4 +29,5 @@ export enum Status {
     HavePregnanted,
     lactation,
 }
+export const Gender = { "0": "男", "1": "女" };
 

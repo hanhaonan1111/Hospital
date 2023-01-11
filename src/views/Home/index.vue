@@ -4,12 +4,17 @@ import { reactive } from "vue";
 import KnowledgeList from "./components/KnowledgeList.vue";
 import { getArticalList } from "@/services/home";
 import FollowDoctor from "./components/FollowDoctor.vue";
-
+import { useConsultStore } from "@/stores/index";
+import type { Type } from "@/enums/consult";
+let store = useConsultStore();
 let params = reactive<getArticalParams>({
   type: "like",
   current: 1,
   pageSize: 10,
 });
+function goChooseHospital(type: Type) {
+  store.updateData({ type });
+}
 </script>
 
 <template>
@@ -33,7 +38,11 @@ let params = reactive<getArticalParams>({
         </router-link>
       </van-col>
       <van-col span="8">
-        <router-link to="/consult/fast" class="nav">
+        <router-link
+          to="/consult/fast"
+          class="nav"
+          @click="goChooseHospital(2)"
+        >
           <Icon name="home-graphic"></Icon>
           <p class="title">极速问诊</p>
           <p class="desc">20s医生极速回复</p>

@@ -55,7 +55,6 @@ onBeforeMount(() => {
       confirmButtonColor: "var(--cp-primary)",
     }).then(() => {
       OtherData.value = { ...store.params };
-      console.log(store.params.pictures);
       fileList.value = store.params.pictures ? store.params.pictures : [];
     });
   }
@@ -94,11 +93,12 @@ function onDeleteImg(e: File, i: { name: string; index: number }) {
 let next = () => {
   if (!OtherData.value.illnessDesc) {
     return showToast("请填写您的病情!");
-  } else if (!OtherData.value.consultFlag) {
+  } else if (OtherData.value.consultFlag === undefined) {
     return showToast("请选择是否就诊过");
-  } else if (!OtherData.value.illnessTime) {
+  } else if (OtherData.value.illnessTime === undefined) {
     return showToast("请选择患病时间");
   }
+
   store.updateData({ ...OtherData.value });
   router.push("/patient?isChange=1");
 };

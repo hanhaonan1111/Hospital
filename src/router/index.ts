@@ -48,6 +48,11 @@ const router = createRouter({
       component: import('@/views/Consult/ConsultDescription.vue'),
       meta: { title: '图文问诊' },
     },
+    {
+      path: '/consult/pay',
+      component: import('@/views/Consult/ConsultPay.vue'),
+      meta: { title: '支付问诊' },
+    },
 
   ],
 });
