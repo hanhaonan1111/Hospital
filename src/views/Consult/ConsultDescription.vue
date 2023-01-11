@@ -4,9 +4,9 @@ import router from "@/router";
 import { uploadImg } from "@/services/consult";
 import { useConsultStore } from "@/stores/index";
 import type { Img, PartialConsult } from "@/types/consult";
-import { Dialog, showConfirmDialog, showFailToast, showToast } from "vant";
+import { showConfirmDialog, showFailToast, showToast } from "vant";
 import type { UploaderAfterRead } from "vant/lib/uploader/types";
-import { reactive, watch, ref, computed, onMounted, onBeforeMount } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
 let store = useConsultStore();
 function clickLeft() {
   router.back();
@@ -100,7 +100,7 @@ let next = () => {
     return showToast("请选择患病时间");
   }
   store.updateData({ ...OtherData.value });
-  console.log(store.params);
+  router.push("/patient?isChange=1");
 };
 </script> 
 

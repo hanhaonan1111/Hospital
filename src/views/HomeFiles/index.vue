@@ -1,8 +1,21 @@
 <template>
   <div class="patient-page">
-    <NavBar title="家庭档案" @click-left="LeftClick" />
+    <NavBar
+      :title="isChange ? '选择患者' : '家庭档案'"
+      @click-left="LeftClick"
+    />
+    <div v-if="isChange" class="patient-change">
+      <h3>请选择患者信息</h3>
+      <p>以便医生给出更准确的治疗，信息仅医生可见</p>
+    </div>
     <div class="patient-list">
-      <div class="patient-item" v-for="(v, i) in list" :key="i">
+      <div
+        class="patient-item"
+        v-for="(v, i) in list"
+        :key="i"
+        :class="{ selected: selected === v.id }"
+        @click="changeSelected(v.id ? v.id : '')"
+      >
         <div class="info">
           <span class="name">{{ v.name }}</span>
           <span class="id">{{
@@ -45,28 +58,51 @@
         @changeBox="changeBox"
       />
     </van-popup>
+    <div class="patient-next" v-if="isChange">
+      <van-button type="primary" round block @click="next">下一步</van-button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { HomeFiles, Patient } from "@/types/user";
 import addPatient from "./components/addPatient.vue";
+import type { HomeFiles, Patient } from "@/types/user";
+import { useConsultStore } from "@/stores/index";
 import { onMounted, reactive, ref } from "vue";
 import http from "@/utils/http";
 import { showToast } from "vant";
 import type { ToastWrapperInstance } from "vant/lib/toast/types";
+import { useRoute } from "vue-router";
 import router from "@/router";
+
 let list = ref<HomeFiles>([] as HomeFiles);
 
+let { updateData } = useConsultStore();
 async function getList() {
   let { data } = await http.get<HomeFiles>("/patient/mylist");
   list.value = data;
 }
-
-onMounted(() => {
-  getList();
+let isChange = ref(false); // 家庭档案false还是选择患者true
+let selected = ref(""); // 默认选中
+onMounted(async () => {
+  let route = useRoute();
+  isChange.value = route.query.isChange ? true : false;
+  await getList();
+  let item = list.value.find((v) => v.defaultFlag === 1);
+  selected.value = item?.id ? item?.id : "";
 });
-
+function next() {
+  if (selected.value.length > 1) {
+    updateData({ patientId: selected.value }); //TODO
+    router.push("/consult/pay");
+  } else {
+    showToast("请选择就诊患者!");
+  }
+}
+function changeSelected(id: string) {
+  selected.value = id;
+}
+//
 let showRight = ref(false);
 
 function LeftClick() {
@@ -103,6 +139,26 @@ function changeBox() {
 </script>
 
 <style lang="scss" scoped>
+.patient-change {
+  padding: 15px;
+  > h3 {
+    font-weight: normal;
+    margin-bottom: 5px;
+  }
+  > p {
+    color: var(--cp-text3);
+  }
+}
+.patient-next {
+  padding: 15px;
+  background-color: #fff;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 80px;
+  box-sizing: border-box;
+}
 .patient-page {
   padding: 46px 0 80px;
   :deep() {
