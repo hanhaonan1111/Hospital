@@ -4,13 +4,10 @@ import router from "@/router";
 import { uploadImg } from "@/services/consult";
 import { useConsultStore } from "@/stores/index";
 import type { Img, PartialConsult } from "@/types/consult";
-import { showFailToast, showToast } from "vant";
+import { Dialog, showConfirmDialog, showFailToast, showToast } from "vant";
 import type { UploaderAfterRead } from "vant/lib/uploader/types";
-
-import { reactive, watch, ref, computed } from "vue";
-
+import { reactive, watch, ref, computed, onMounted, onBeforeMount } from "vue";
 let store = useConsultStore();
-
 function clickLeft() {
   router.back();
 }
@@ -43,26 +40,33 @@ let GoHospital = [
     value: 0,
   },
 ];
-let OtherData = reactive<PartialConsult>({
+let OtherData = ref<PartialConsult>({
   illnessDesc: undefined,
   illnessTime: undefined,
   consultFlag: undefined,
   pictures: [],
 });
-let fileList = ref([]);
-watch(
-  () => OtherData.illnessDesc,
-  () => {
-    console.log(OtherData.illnessDesc, "OtherData.illnessDesc");
+let fileList = ref<Img[] | []>([]);
+onBeforeMount(() => {
+  if (store.params.illnessDesc) {
+    showConfirmDialog({
+      title: "温馨提示",
+      message: "是否恢复您之前填写的病情信息呢？",
+      confirmButtonColor: "var(--cp-primary)",
+    }).then(() => {
+      OtherData.value = { ...store.params };
+      console.log(store.params.pictures);
+      fileList.value = store.params.pictures ? store.params.pictures : [];
+    });
   }
-);
+});
+
 let disabled = computed(() => {
-  console.log(OtherData.illnessDesc, "disabled");
   return (
-    OtherData.illnessTime !== undefined &&
-    OtherData.consultFlag !== undefined &&
-    OtherData.illnessDesc !== undefined &&
-    OtherData.illnessDesc !== ""
+    OtherData.value.illnessTime !== undefined &&
+    OtherData.value.consultFlag !== undefined &&
+    OtherData.value.illnessDesc !== undefined &&
+    OtherData.value.illnessDesc !== ""
   );
 });
 
@@ -74,7 +78,7 @@ let afterRead: UploaderAfterRead = function (items) {
     .then(({ data }) => {
       items.status = "done";
       items.message = "上传成功";
-      OtherData.pictures?.push({ id: data.id, url: data.url });
+      OtherData.value.pictures?.push({ id: data.id, url: data.url });
     })
     .catch((e) => {
       showFailToast(e.data.message);
@@ -84,19 +88,18 @@ let afterRead: UploaderAfterRead = function (items) {
 };
 
 function onDeleteImg(e: File, i: { name: string; index: number }) {
-  OtherData.pictures?.splice(i.index, 1);
+  OtherData.value.pictures?.splice(i.index, 1);
   fileList.value.splice(i.index, 1);
 }
 let next = () => {
-  // 下一步
-  if (!OtherData.illnessDesc) {
+  if (!OtherData.value.illnessDesc) {
     return showToast("请填写您的病情!");
-  } else if (!OtherData.consultFlag) {
+  } else if (!OtherData.value.consultFlag) {
     return showToast("请选择是否就诊过");
-  } else if (!OtherData.illnessTime) {
+  } else if (!OtherData.value.illnessTime) {
     return showToast("请选择患病时间");
   }
-  store.updateData({ ...OtherData });
+  store.updateData({ ...OtherData.value });
   console.log(store.params);
 };
 </script> 
@@ -125,7 +128,6 @@ let next = () => {
         placeholder="请详细描述您的病情，病情描述不能为空"
         v-model="OtherData.illnessDesc"
       ></van-field>
-
       <div class="item">
         <p>本次患病多久了？</p>
         <RadioBtn
@@ -155,7 +157,7 @@ let next = () => {
             <p v-if="false">{{ file.name }}</p></template
           >
         </van-uploader>
-        <p class="tip" v-if="fileList.length === 0">
+        <p class="tip" v-if="fileList?.length === 0">
           上传内容仅医生可见,最多9张图,最大5MB
         </p>
       </div>
