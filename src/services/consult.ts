@@ -1,4 +1,4 @@
-import type { ResAllDepartmentData } from '@/types/consult'
+import type { ResAllDepartmentData, Img } from '@/types/consult'
 import http from '@/utils/http'
 import type {
     UploaderFileListItem,
@@ -7,8 +7,9 @@ export function getAllDepartment() {
     return http.get<ResAllDepartmentData>('/dep/all')
 }
 
+
 export function uploadImg(file: File) {
     let fd = new FormData()
     fd.append('file', file)
-    return http.post('/upload', fd)
+    return http.post<Img>('/upload', fd)
 }

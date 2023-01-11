@@ -33,13 +33,14 @@ instance.interceptors.response.use(
         return res.data
     },
     (err) => {
-        // TODO 5. 处理401错误
-        let store = useUserStore()
-        // 1.清除过期的用户数据
-        store.clearUser()
-        // 2.跳转页面,登陆成功之后,调回原来的路径
-        router.push({ path: '/login', query: { orginURL: router.currentRoute.value.fullPath } })
-        return Promise.reject(err)
+        if (err.request.status === 401) {
+            let store = useUserStore()
+            store.clearUser()
+            router.push({ path: '/login', query: { orginURL: router.currentRoute.value.fullPath } })
+            return Promise.reject(err)
+        }
+        return Promise.reject(err.response)
+
     }
 )
 

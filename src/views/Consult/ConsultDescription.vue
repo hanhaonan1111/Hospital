@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { IillnessTime, has } from "@/enums/consult";
+import { IillnessTime } from "@/enums/consult";
 import router from "@/router";
 import { uploadImg } from "@/services/consult";
 import { useConsultStore } from "@/stores/index";
-import type { PartialConsult } from "@/types/consult";
-import type {
-  UploaderAfterRead,
-  UploaderFileListItem,
-} from "vant/lib/uploader/types";
-import { reactive, watch, ref } from "vue";
+import type { Img, PartialConsult } from "@/types/consult";
+import { showFailToast } from "vant";
+import type { UploaderAfterRead } from "vant/lib/uploader/types";
+
+import { reactive, watch, ref, computed } from "vue";
 
 let store = useConsultStore();
 
@@ -51,33 +50,40 @@ let OtherData = reactive<PartialConsult>({
   pictures: [],
 });
 let fileList = ref([]);
-watch(
-  () => OtherData.consultFlag,
-  () => {
-    console.log(store.params, "OtherData");
-  }
-);
 
-let afterRead: UploaderAfterRead = function (item) {
-  if (Array.isArray(item)) return;
-  if (!item.file) return;
-  item.status = "uploading";
-  uploadImg(item.file)
-    .then((res) => {
-      item.status = "done";
-      item.message = undefined;
-      item.url = res.data.url;
-      OtherData.pictures?.push(res.data);
+let disabled = computed(() => {
+  return (
+    OtherData.illnessTime !== undefined && OtherData.consultFlag !== undefined
+  );
+});
+
+let afterRead: UploaderAfterRead = function (items) {
+  if (Array.isArray(items)) return;
+  if (!items.file) return;
+  items.status = "uploading";
+  uploadImg(items.file)
+    .then(({ data }) => {
+      items.status = "done";
+      items.message = "上传成功";
+      OtherData.pictures?.push({ id: data.id, url: data.url });
     })
     .catch((e) => {
-      item.status = "failed";
-      item.message = "失败";
+      showFailToast(e.data.message);
+      items.status = "failed";
+      items.message = "上传失败";
     });
 };
-function onDeleteImg(item: UploaderFileListItem) {
-  console.log("DELETE");
+
+function onDeleteImg(e: File, i: { name: string; index: number }) {
+  OtherData.pictures?.splice(i.index, 1);
+  fileList.value.splice(i.index, 1);
 }
-</script>
+let next = () => {
+  // 下一步
+  store.updateData({ ...OtherData });
+  console.log(store.params);
+};
+</script> 
 
 <template>
   <div class="consult-illness-page">
@@ -123,7 +129,6 @@ function onDeleteImg(item: UploaderFileListItem) {
         <van-uploader
           :max-count="9"
           :max-size="5 * 1024 * 1024"
-          multiple
           upload-icon="photo-o"
           v-model="fileList"
           upload-text="上传图片"
@@ -138,6 +143,14 @@ function onDeleteImg(item: UploaderFileListItem) {
           上传内容仅医生可见,最多9张图,最大5MB
         </p>
       </div>
+      <van-button
+        type="primary"
+        block
+        round
+        :class="{ disabled: disabled === false }"
+        @click="next"
+        >下一步</van-button
+      >
     </div>
   </div>
 </template>
@@ -232,6 +245,16 @@ function onDeleteImg(item: UploaderFileListItem) {
         color: var(--cp-text3);
       }
     }
+  }
+}
+.van-button {
+  font-size: 16px;
+  margin-bottom: 30px;
+  &.disabled {
+    opacity: 1;
+    background: #fafafa;
+    color: #d9dbde;
+    border: #fafafa;
   }
 }
 </style>

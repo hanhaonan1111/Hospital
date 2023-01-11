@@ -1,7 +1,7 @@
 import type { IllnessType, IillnessTime, isNormal, has, Status } from "@/enums/consult"
 
 // 极速问诊(入参)
-type Img = { id: string, url: string }
+export type Img = { id: string, url: string }
 export type ConsultParams = {
     type: Type,
     // 优惠劵
@@ -27,7 +27,13 @@ export type ResAllDepartmentData = {
     id: string; name: string, child: { id: string; name: string }[]
 }[]
 
-
+// 上传图片返回值
+export type uploadImg = {
+    data?: Img
+} & {
+    code: number,
+    message: string
+}
 
 // 获取所有科室返回值
 export type allDepRes = {
