@@ -1,32 +1,42 @@
 <script setup lang="ts">
+import router from "@/router";
 import { getAllDepartment } from "@/services/consult";
-import type { allDepRes, allDep } from "@/types/consult";
+import type { ResAllDepartmentData } from "@/types/consult";
 import { ref, onMounted } from "vue";
+import { useConsultStore } from "@/stores/index";
+let { updateData } = useConsultStore();
+const active = ref<number>(0);
 
-const active = ref(0);
-let list = ref<allDep>([] as allDep);
+function setDepartment(id: string) {
+  updateData({ depId: id });
+}
+let list = ref<ResAllDepartmentData>([] as ResAllDepartmentData);
 
 onMounted(async () => {
   let { data } = await getAllDepartment();
-  list.value = { data };
+  list.value = data;
 });
+
+function onClickLeft() {
+  router.back();
+}
 </script>
 
 <template>
   <div class="consult-dep-page">
-    <nav-bar title="选择科室" />
+    <nav-bar title="选择科室" :onClickLeft="onClickLeft" />
     <div class="wrapper">
       <van-sidebar v-model="active">
-        <van-sidebar-item
-          :title="val.name"
-          v-for="val in list.data"
-          :key="val.id"
-        />
+        <van-sidebar-item :title="val.name" v-for="val in list" :key="val.id" />
       </van-sidebar>
-      <div class="sub-dep">
-        <router-link to="/consult/illness">科室一</router-link>
-        <router-link to="/consult/illness">科室二</router-link>
-        <router-link to="/consult/illness">科室三</router-link>
+      <div class="sub-dep" v-if="list[active]">
+        <router-link
+          to="/consult/illness"
+          v-for="v in list[active].child"
+          :key="v.id"
+          @click="setDepartment(v.id)"
+          >{{ v.name }}</router-link
+        >
       </div>
     </div>
   </div>
@@ -64,5 +74,8 @@ onMounted(async () => {
       color: var(--cp-dark);
     }
   }
+}
+.sub-dep {
+  overflow: auto;
 }
 </style>

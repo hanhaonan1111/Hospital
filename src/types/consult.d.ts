@@ -23,18 +23,19 @@ export type ConsultParams = {
 
 export type PartialConsult = Partial<ConsultParams>
 
+export type ResAllDepartmentData = {
+    id: string; name: string, child: { id: string; name: string }[]
+}[]
 
-export type allDep = {
-    data?: {
-        id: string; name: string, child: { id: string; name: string }[]
-    }[]
-}
+
+
 // 获取所有科室返回值
-export type allDepRes = allDep & {
+export type allDepRes = {
+    data?: Data
+} & {
     code: number,
     message: string
 }
 
-export type ChildDep = {}
 
 
