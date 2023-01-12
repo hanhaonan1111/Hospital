@@ -3,11 +3,11 @@
     <!-- 导航栏 -->
     <nav-bar title="问诊室" />
     <!-- 顶部Tab栏动态显示的状态 -->
-    <room-status></room-status>
+    <room-status :status="status"></room-status>
     <!-- 聊天记录栏目 -->
     <ChartContent :charList="charList" />
     <!-- 底部输入框 -->
-    <RoomActions @EmitData="EmitData" />
+    <RoomActions @EmitData="EmitData" :status="status.status" />
   </div>
 </template>
 
@@ -24,6 +24,7 @@ import { baseURL } from "@/utils/http";
 import { useUserStore } from "@/stores/index";
 import { useRoute } from "vue-router";
 import type { Datum, Item } from "@/types/chat";
+import { getOrderDetailAsync } from "@/services/consult";
 let socket: Socket;
 
 let router = useRoute();
@@ -32,6 +33,11 @@ let charList = ref<any>([]);
 onUnmounted(() => {
   socket.close();
 });
+let status = ref({});
+async function getOrderDetail() {
+  let { data } = await getOrderDetailAsync(router.query.orderId as string);
+  status.value = data;
+}
 onMounted(() => {
   socket = io(baseURL, {
     auth: {
@@ -60,9 +66,17 @@ onMounted(() => {
     // 接受发送成功的消息或者是接受医生发来的消息
     charList.value.push(e);
     nextTick(() => {
-      window.scrollTo(0, document.body.scrollHeight);
+      let dment = document.querySelector(".room-box");
+      // console.dir(dment.clientHeight + 10);
+      dment?.scrollTo(0, dment.scrollHeight + 10);
+      // window.scrollTo(0, document.body.scrollHeight);
     });
   });
+
+  socket.on("statusChange", async (e) => {
+    await getOrderDetail();
+  });
+  getOrderDetail();
 });
 function EmitData(val: string) {
   let query = {
@@ -81,8 +95,9 @@ function EmitData(val: string) {
 <style lang="scss">
 .room-box {
   background-color: #f7f7f7;
-  height: 100%;
+  height: 605px;
   margin-bottom: 60px;
+  overflow-y: scroll;
 }
 </style>
  

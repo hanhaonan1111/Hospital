@@ -1,18 +1,29 @@
 <template>
   <div class="room-status">
-    <div class="wait">已通知医生尽快接诊，24小时内医生未回复将自动退款</div>
-    <!-- <div class="chat">
+    <div class="wait" v-if="status.status === 2">
+      已通知医生尽快接诊，24小时内医生未回复将自动退款
+    </div>
+    <div class="chat" v-else-if="status.status === 3">
       <span>咨询中</span>
-      <span>剩余时间：23:10:34</span>
-    </div> -->
-    <!-- <div class="end"><van-icon name="passed" /> 已结束</div> -->
+      <span class="chatSpan"
+        >剩余时间：<van-count-down :time="status.countdown * 1000"
+      /></span>
+    </div>
+    <div class="end" v-else-if="status.status === 4">
+      <van-icon name="passed" /> 已结束
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+let props = defineProps<{ status: any }>();
+console.log(props, "<><><>");
 </script>
 
 <style lang="scss">
+.chatSpan {
+  display: flex;
+}
 .room-status {
   position: fixed;
   left: 0;

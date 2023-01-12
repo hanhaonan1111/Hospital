@@ -8,6 +8,7 @@
       autocomplete="off"
       @keydown.enter="QuestionDoctor"
       v-model="question"
+      :disabled="status !== 3"
     ></van-field>
     <van-uploader :preview-image="false">
       <Icon name="consult-img" />
@@ -19,6 +20,7 @@
 import { ref } from "vue";
 
 let emit = defineEmits<{ (e: "EmitData", val: string): void }>();
+defineProps<{ status: number }>();
 let question = ref("");
 async function QuestionDoctor() {
   await emit("EmitData", question.value);

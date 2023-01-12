@@ -37,3 +37,8 @@ export function getOrderId(data: PartialConsult) {
 export function payImmediateParams(query: payImmediate) {
     return http.post<{ payUrl: string }>('/patient/consult/pay', query)
 }
+
+export function getOrderDetailAsync(id: string) {
+    return http.get('/patient/consult/order/detail?orderId=' + id)
+
+}
