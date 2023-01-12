@@ -18,11 +18,15 @@
           <div class="time">{{ v.createTime?.split(" ")[1] }}</div>
           <div class="pao">{{ v.msg.content }}</div>
         </div>
-        <van-image :src="v.toAvatar" />
+        <van-image
+          src="https://avatars.githubusercontent.com/u/111566162?s=96&v=4"
+        />
       </div>
       <!-- Left -->
       <div class="msg msg-from" v-else>
-        <van-image :src="v.fromAvatar" />
+        <van-image
+          src="https://cp.itheima.net/assets/avatar-doctor.6cf240f4.svg"
+        />
         <div class="content">
           <div class="time">{{ v.createTime?.split(" ")[1] }}</div>
           <div class="pao">{{ v.msg.content }}</div>
