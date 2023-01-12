@@ -15,45 +15,49 @@ const router = createRouter({
       redirect: '/home',
       component: () => import('@/views/Layout/index.vue'),
       children: [
-        { path: '/home', component: import('@/views/Home/index.vue'), meta: { title: '首页' } },
-        { path: '/article', component: import('@/views/Article/index.vue'), meta: { title: '健康百科' } },
-        { path: '/notify', component: import('@/views/Notify/index.vue'), meta: { title: '消息通知' } },
+        { path: '/home', component: () => import('@/views/Home/index.vue'), meta: { title: '首页' } },
+        { path: '/article', component: () => import('@/views/Article/index.vue'), meta: { title: '健康百科' } },
+        { path: '/notify', component: () => import('@/views/Notify/index.vue'), meta: { title: '消息通知' } },
         {
-          path: '/user', component: import('@/views/User/index.vue'), meta: { title: '个人中心' },
+          path: '/user', component: () => import('@/views/User/index.vue'), meta: { title: '个人中心' },
         },
       ]
     },
     {
       path: '/user/patient',
-      component: import('@/views/HomeFiles/index.vue'),
+      component: () => import('@/views/HomeFiles/index.vue'),
       meta: { title: '家庭档案' },
     },
     {
       path: '/patient',
-      component: import('@/views/HomeFiles/index.vue'),
+      component: () => import('@/views/HomeFiles/index.vue'),
       meta: { title: '选择患者' },
     },
     {
       path: '/consult/fast',
-      component: import('@/views/Consult/ConsultFast.vue'),
+      component: () => import('@/views/Consult/ConsultFast.vue'),
       meta: { title: '极速问诊' },
     },
     {
       path: '/consult/dep',
-      component: import('@/views/Consult/ConsultDepartment.vue'),
+      component: () => import('@/views/Consult/ConsultDepartment.vue'),
       meta: { title: '选择科室' },
     },
     {
       path: '/consult/illness',
-      component: import('@/views/Consult/ConsultDescription.vue'),
+      component: () => import('@/views/Consult/ConsultDescription.vue'),
       meta: { title: '图文问诊' },
     },
     {
       path: '/consult/pay',
-      component: import('@/views/Consult/ConsultPay.vue'),
+      component: () => import('@/views/Consult/ConsultPay.vue'),
       meta: { title: '支付' },
     },
-
+    {
+      path: '/room',
+      component: () => import('@/views/Room/index.vue'),
+      meta: { title: '问诊聊天室' },
+    },
   ],
 });
 
