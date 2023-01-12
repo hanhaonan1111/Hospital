@@ -6,6 +6,8 @@
       :border="false"
       placeholder="问医生"
       autocomplete="off"
+      @keydown.enter="QuestionDoctor"
+      v-model="question"
     ></van-field>
     <van-uploader :preview-image="false">
       <Icon name="consult-img" />
@@ -14,6 +16,14 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
+
+let emit = defineEmits<{ (e: "EmitData", val: string): void }>();
+let question = ref("");
+async function QuestionDoctor() {
+  await emit("EmitData", question.value);
+  question.value = "";
+}
 </script>
 
 <style lang="scss" scoped>

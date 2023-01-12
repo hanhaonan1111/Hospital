@@ -1,17 +1,20 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+let props = defineProps<{ type: number; msg: { content: string } }>();
+</script>
 
 <template>
-  <div class="content">
+  <div class="content" v-if="type === 32">
     <span class="green">温馨提示：</span>
     <span>在线咨询不能代替面诊，医护人员建议仅供参考</span>
   </div>
-  <div class="content">
-    <span>医护人员正在赶来，请耐心等候</span>
+  <div class="content" v-else>
+    <span>{{ msg.content }}</span>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .content {
+  margin: 5px 15px;
   height: 9.06667vw;
   line-height: 9.06667vw;
   background-color: #fff;
@@ -20,6 +23,8 @@
   border-radius: 4.53333vw;
   padding: 0 4.26667vw;
   max-width: 100%;
+  text-align: center;
+  color: gray;
 }
 .green {
   color: #16c2a3;
