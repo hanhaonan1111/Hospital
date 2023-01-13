@@ -1,18 +1,22 @@
 <template>
-  <div class="evalutate-card" v-if="evaluateData.msgType === 23">
+  <div class="evalutate-card" v-if="evaluateData.msgType === 24 || no !== true">
     <p class="title">医生服务评价</p>
     <p class="desc">我们会更加努力提升服务质量</p>
     <van-rate
-      v-model="starts"
+      v-model="evaluateData.msg.evaluateDoc.score"
       size="7vw"
       gutter="3vw"
       color="#FADB14"
       void-icon="star"
       void-color="rgba(0,0,0,0.04)"
+      readonly
     />
   </div>
 
-  <div class="evalutate-card" v-else>
+  <div
+    class="evalutate-card"
+    v-else-if="evaluateData.msgType === 23 && no === true"
+  >
     <p class="title">感谢您的评价</p>
     <p class="desc">本次在线问诊服务您还满意吗？</p>
     <van-rate
@@ -33,19 +37,37 @@
     ></van-field>
     <div class="footer">
       <van-checkbox v-model="isShowName">匿名评价</van-checkbox>
-      <van-button type="primary" size="small" round> 提交评价 </van-button>
+      <van-button type="primary" size="small" round @click="submit">
+        提交评价
+      </van-button>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { submitEvaluate } from "@/services/consult";
 import { ref } from "@vue/reactivity";
+import { useRoute } from "vue-router";
 
 let props = defineProps<{ evaluateData: any }>();
-console.log(props.evaluateData, "evaluateData");
+let no = ref(true);
+
 let starts = ref(0);
 let evaluate = ref("");
-let isShowName = ref(false);
+let isShowName = ref(true);
+let route = useRoute();
+
+async function submit() {
+  let data = {
+    orderId: route.query.orderId,
+    score: starts.value,
+    content: evaluate.value,
+    anonymousFlag: isShowName.value ? 1 : 0,
+    docId: "1",
+  };
+  await submitEvaluate(data);
+  no.value = false;
+}
 </script>
  
 

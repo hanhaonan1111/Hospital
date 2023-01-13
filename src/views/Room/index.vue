@@ -49,6 +49,8 @@ onUnmounted(() => {
 let status = ref({});
 async function getOrderDetail() {
   let { data } = await getOrderDetailAsync(router.query.orderId as string);
+  console.log(data, "DATA");
+
   status.value = data;
 }
 
@@ -69,7 +71,8 @@ onMounted(async () => {
     //链接关闭之后回调
     charList.value = [];
   });
-  socket.on("chatMsgList", async ({ data }: { data: any }) => {
+  socket.on("chatMsgList", async (res) => {
+    let data = res.data;
     // 获取历史记录
     if (data.length === 0) {
       showToast("没有聊天记录了");

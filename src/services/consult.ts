@@ -45,9 +45,13 @@ export function getOrderDetailAsync(id: string) {
 
 // 查看电子处方/patient/consult/prescription/6855105085374464
 export function lookMedision(id: string) {
-    console.log(id, '[][][]');
-
     return http.get('/patient/consult/prescription/' + id)
+}
+
+
+// 提交评价
+export function submitEvaluate(data: any) {
+    return http.post('/patient/order/evaluate', data)
 }
 
 
