@@ -22,7 +22,6 @@ import { showImagePreview } from "vant";
 let props = defineProps<{ msg: any }>();
 let info = ref({});
 function lookImg(imgs: any) {
-  console.log(imgs);
   let imgsUrl: any = [];
   imgs.forEach((v: any) => {
     imgsUrl.push(v.url);

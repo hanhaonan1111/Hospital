@@ -17,7 +17,6 @@
 
 <script lang="ts" setup>
 let props = defineProps<{ status: any }>();
-console.log(props, "<><><>");
 </script>
 
 <style lang="scss">

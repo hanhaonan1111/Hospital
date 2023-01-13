@@ -5,7 +5,15 @@
     <!-- 顶部Tab栏动态显示的状态 -->
     <room-status :status="status"></room-status>
     <!-- 聊天记录栏目 -->
-    <ChartContent :charList="charList" />
+    <div class="charList">
+      <van-pull-refresh
+        v-model="loading"
+        success-text="刷新成功"
+        @refresh="loadBeforeList"
+      >
+        <ChartContent :charList="charList" />
+      </van-pull-refresh>
+    </div>
     <!-- 底部输入框 -->
     <RoomActions
       @EmitData="EmitData"
@@ -29,6 +37,7 @@ import { useUserStore } from "@/stores/index";
 import { useRoute } from "vue-router";
 import type { Datum, Item } from "@/types/chat";
 import { getOrderDetailAsync } from "@/services/consult";
+import { showToast } from "vant";
 let socket: Socket;
 
 let router = useRoute();
@@ -42,7 +51,8 @@ async function getOrderDetail() {
   let { data } = await getOrderDetailAsync(router.query.orderId as string);
   status.value = data;
 }
-onMounted(() => {
+
+onMounted(async () => {
   socket = io(baseURL, {
     auth: {
       token: `Bearer ${user?.token}`,
@@ -57,21 +67,40 @@ onMounted(() => {
   });
   socket.on("disconnect", () => {
     //链接关闭之后回调
+    charList.value = [];
   });
-  socket.on("chatMsgList", ({ data }: { data: any }) => {
+  socket.on("chatMsgList", async ({ data }: { data: any }) => {
     // 获取历史记录
-    const li: any = [];
+    if (data.length === 0) {
+      showToast("没有聊天记录了");
+      return;
+    }
+    let li: any = [];
     data?.forEach((val: any) => {
       li.push(...val.items);
     });
-    charList.value = [...li, charList.value];
+    if (charList.value.length > 0) {
+      charList.value = [...li, ...charList.value];
+      nextTick(() => {
+        let dment = document.querySelector(".charList");
+        console.log(dment, 200);
+
+        dment?.scrollTo(0, 200);
+      });
+    } else {
+      charList.value = li;
+      await nextTick();
+      let dment = document.querySelector(".charList");
+      dment?.scrollTo(0, dment.scrollHeight);
+    }
   });
+
   socket.on("receiveChatMsg", (e) => {
     // 接受发送成功的消息或者是接受医生发来的消息
-    charList.value.push(e);
+    charList.push(e);
     nextTick(() => {
-      let dment = document.querySelector(".room-box");
-      dment?.scrollTo(0, dment.scrollHeight + 1002);
+      let dment = document.querySelector(".charList");
+      dment?.scrollTo(0, dment.scrollHeight);
     });
   });
 
@@ -80,6 +109,7 @@ onMounted(() => {
   });
   getOrderDetail();
 });
+
 function EmitData(val: string) {
   let query = {
     from: "199",
@@ -100,15 +130,26 @@ function sendImg(data: any) {
   };
   socket.emit("sendChatMsg", query);
 }
+let loading = ref(false);
+function loadBeforeList() {
+  let lastTime = charList.value[0].createTime;
+  console.log(lastTime, "lastTime");
+
+  socket.emit("getChatMsgList", 10, lastTime, router.query.orderId);
+  loading.value = false;
+}
 </script>
-
-
 <style lang="scss">
 .room-box {
   background-color: #f7f7f7;
-  height: 605px;
+  height: 530px;
   margin-bottom: 60px;
+  margin-top: 85px;
   overflow-y: scroll;
+}
+.charList {
+  overflow: auto;
+  height: 100%;
 }
 </style>
  

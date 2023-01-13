@@ -39,20 +39,23 @@
       <div class="msg msg-to" v-if="v.to == '1'">
         <div class="content">
           <div class="time">{{ v.createTime?.split(" ")[1] }}</div>
-          <van-image fit="contain" :src="v.msg?.url" />
+          <van-image fit="contain" :src="v.msg?.url" @load="loadSuccess" />
         </div>
         <van-image
           src="https://avatars.githubusercontent.com/u/111566162?s=96&v=4"
         />
       </div>
       <div class="msg msg-from" v-else>
-        <!-- {{ v.msg.picture.url }} -->
         <van-image
           src="https://cp.itheima.net/assets/avatar-doctor.6cf240f4.svg"
         />
         <div class="content">
           <div class="time">{{ v.createTime?.split(" ")[1] }}</div>
-          <van-image fit="contain" :src="v.msg.picture?.url" />
+          <van-image
+            fit="contain"
+            :src="v.msg.picture?.url"
+            @load="loadSuccess"
+          />
         </div>
       </div>
     </template>
@@ -60,29 +63,22 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch } from "@vue/runtime-core";
+import { nextTick, onMounted, watch } from "@vue/runtime-core";
 import Card from "./Card.vue";
 import RoomMeg from "./RoomMeg.vue";
 
 let props = defineProps<{ charList: any }>();
 
-watch(
-  () => props.charList,
-  () => {
-    console.log(props.charList);
-  }
-);
-onMounted(() => {
-  console.log("底部");
-
-  let dment = document.querySelector(".room-box");
+async function loadSuccess() {
+  await nextTick();
+  let dment = document.querySelector(".charList");
   dment?.scrollTo(0, dment.scrollHeight);
-});
+}
 </script>
 
 <style lang="scss" scoped>
 @import "@/styles/root.scss";
 .msg.msg-illness {
-  margin-top: 95px !important;
+  margin-top: 10px !important;
 }
 </style>

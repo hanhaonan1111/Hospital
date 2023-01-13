@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
 import { uploadImg } from "@/services/consult";
 import { closeToast, showLoadingToast, Toast } from "vant";
 let emit = defineEmits<{
