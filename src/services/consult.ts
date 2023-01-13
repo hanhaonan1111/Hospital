@@ -41,5 +41,13 @@ export function payImmediateParams(query: payImmediate) {
 
 export function getOrderDetailAsync(id: string) {
     return http.get('/patient/consult/order/detail?orderId=' + id)
-
 }
+
+// 查看电子处方/patient/consult/prescription/6855105085374464
+export function lookMedision(id: string) {
+    console.log(id, '[][][]');
+
+    return http.get('/patient/consult/prescription/' + id)
+}
+
+

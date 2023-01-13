@@ -59,13 +59,55 @@
         </div>
       </div>
     </template>
+
+    <template v-else-if="v.msgType === 22">
+      <div class="msg msg-recipe">
+        <div class="content" v-if="v.msg.prescription">
+          <div class="head van-hairline--bottom">
+            <div class="head-tit">
+              <h3>电子处方</h3>
+              <p @click="lookMedicine(v)">
+                原始处方
+                <van-icon name="arrow"></van-icon>
+              </p>
+            </div>
+            <p>
+              {{ v.msg.prescription.name }}
+              {{ v.msg.prescription.genderValue }}
+              {{ v.msg.prescription.age }}岁
+              {{ v.msg.prescription.diagnosis }}
+            </p>
+            <p>开方时间：{{ v.msg.prescription.createTime }}</p>
+          </div>
+          <div class="body">
+            <div
+              class="body-item"
+              v-for="med in v.msg.prescription.medicines"
+              :key="med.id"
+            >
+              <div class="durg">
+                <p>{{ med.name }} {{ med.specs }}</p>
+                <p>{{ med.usageDosag }}</p>
+              </div>
+              <div class="num">x{{ med.quantity }}</div>
+            </div>
+          </div>
+          <div class="foot">
+            <span>购买药品</span>
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useRoute } from "vue-router";
 import { nextTick, onMounted, watch } from "@vue/runtime-core";
 import Card from "./Card.vue";
 import RoomMeg from "./RoomMeg.vue";
+import { lookMedision } from "@/services/consult";
+import { ImagePreview, showImagePreview } from "vant";
 
 let props = defineProps<{ charList: any }>();
 
@@ -73,6 +115,13 @@ async function loadSuccess() {
   await nextTick();
   let dment = document.querySelector(".charList");
   dment?.scrollTo(0, dment.scrollHeight);
+}
+let route = useRoute();
+async function lookMedicine(data: any) {
+  let {
+    data: { url },
+  } = await lookMedision(data.msg.prescription.id);
+  showImagePreview([url]);
 }
 </script>
 

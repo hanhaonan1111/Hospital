@@ -79,14 +79,9 @@ onMounted(async () => {
     data?.forEach((val: any) => {
       li.push(...val.items);
     });
+
     if (charList.value.length > 0) {
       charList.value = [...li, ...charList.value];
-      nextTick(() => {
-        let dment = document.querySelector(".charList");
-        console.log(dment, 200);
-
-        dment?.scrollTo(0, 200);
-      });
     } else {
       charList.value = li;
       await nextTick();
@@ -97,7 +92,7 @@ onMounted(async () => {
 
   socket.on("receiveChatMsg", (e) => {
     // 接受发送成功的消息或者是接受医生发来的消息
-    charList.push(e);
+    charList.value.push(e);
     nextTick(() => {
       let dment = document.querySelector(".charList");
       dment?.scrollTo(0, dment.scrollHeight);
@@ -133,8 +128,6 @@ function sendImg(data: any) {
 let loading = ref(false);
 function loadBeforeList() {
   let lastTime = charList.value[0].createTime;
-  console.log(lastTime, "lastTime");
-
   socket.emit("getChatMsgList", 10, lastTime, router.query.orderId);
   loading.value = false;
 }
