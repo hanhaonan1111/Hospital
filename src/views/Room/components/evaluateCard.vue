@@ -1,9 +1,9 @@
 <template>
-  <div class="evalutate-card" v-if="evaluateData.msgType === 24 || no !== true">
+  <div class="evalutate-card" v-if="evaluateData.msgType === 24">
     <p class="title">医生服务评价</p>
     <p class="desc">我们会更加努力提升服务质量</p>
     <van-rate
-      v-model="evaluateData.msg.evaluateDoc.score"
+      :modelValue="evaluateData.msg.evaluateDoc.score || starts"
       size="7vw"
       gutter="3vw"
       color="#FADB14"
@@ -13,10 +13,7 @@
     />
   </div>
 
-  <div
-    class="evalutate-card"
-    v-else-if="evaluateData.msgType === 23 && no === true"
-  >
+  <div class="evalutate-card" v-else-if="evaluateData.msgType === 23">
     <p class="title">感谢您的评价</p>
     <p class="desc">本次在线问诊服务您还满意吗？</p>
     <van-rate
@@ -47,6 +44,7 @@
 <script lang="ts" setup>
 import { submitEvaluate } from "@/services/consult";
 import { ref } from "@vue/reactivity";
+import { onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 
 let props = defineProps<{ evaluateData: any }>();
@@ -56,7 +54,9 @@ let starts = ref(0);
 let evaluate = ref("");
 let isShowName = ref(true);
 let route = useRoute();
-
+onUnmounted(() => {
+  starts.value = 0;
+});
 async function submit() {
   let data = {
     orderId: route.query.orderId,
@@ -67,6 +67,7 @@ async function submit() {
   };
   await submitEvaluate(data);
   no.value = false;
+  props.evaluateData.msgType = 24;
 }
 </script>
  
