@@ -89,15 +89,20 @@
                 <p>{{ med.name }} {{ med.specs }}</p>
                 <p>{{ med.usageDosag }}</p>
               </div>
-              <div class="num">x{{ med.quantity }}</div>
+              <div class="num">{{ med.quantity }}</div>
             </div>
           </div>
           <div class="foot">
-            <span>购买药品</span>
+            <span @click="buy(v.msg.prescription)">购买药品</span>
           </div>
         </div>
       </div>
     </template>
+    <!--  23 || 24 时显示 -->
+    <evaluate-card
+      v-else-if="v.msgType === 23 || v.msgType === 24"
+      :evaluateData="v"
+    />
   </div>
 </template>
 
@@ -107,7 +112,9 @@ import { nextTick, onMounted, watch } from "@vue/runtime-core";
 import Card from "./Card.vue";
 import RoomMeg from "./RoomMeg.vue";
 import { lookMedision } from "@/services/consult";
-import { ImagePreview, showImagePreview } from "vant";
+import { ImagePreview, showImagePreview, showToast } from "vant";
+import router from "@/router";
+import evaluateCard from "./evaluateCard.vue";
 
 let props = defineProps<{ charList: any }>();
 
@@ -123,6 +130,21 @@ async function lookMedicine(data: any) {
   } = await lookMedision(data.msg.prescription.id);
   showImagePreview([url]);
 }
+
+function buy(data: any) {
+  console.log(data);
+
+  if (!data) {
+    return;
+  } else if (data.status === 3) return showToast("处方已失效");
+  else if (data.status === 1 && data.orderId === null) {
+    // 未付款 没有订单id =>预支付页面
+    router.push("/order/pay?id=" + data.id);
+  } else if (data.status === 1 && data.orderId) {
+    // 未付款 且有订单id=>去订单列表页面
+    router.push("/order/" + data.orderId);
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -130,4 +152,54 @@ async function lookMedicine(data: any) {
 .msg.msg-illness {
   margin-top: 10px !important;
 }
+
+.evalutate-card {
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  text-align: center;
+  padding: 15px;
+  .title {
+    font-size: 15px;
+    margin-bottom: 5px;
+  }
+  .desc {
+    font-size: 12px;
+    margin-bottom: 15px;
+    color: var(--cp-tip);
+  }
+  .van-field {
+    background-color: var(--cp-bg);
+    margin: 15px 0;
+    border-radius: 8px;
+  }
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    ::v-deep() {
+      .van-checkbox {
+        .van-icon {
+          font-size: 12px;
+        }
+        &__label {
+          font-size: 12px;
+          color: var(--cp-tip);
+        }
+        height: 16px;
+      }
+      .van-button {
+        padding: 0 16px;
+        &.disabled {
+          opacity: 1;
+          background: #fafafa;
+          color: #d9dbde;
+          border: #fafafa;
+        }
+      }
+    }
+  }
+}
 </style>
+ 
