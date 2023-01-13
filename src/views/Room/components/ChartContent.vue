@@ -35,16 +35,18 @@
     </template>
 
     <template v-else-if="v.msgType === 4">
+      <!-- 有bug -->
       <div class="msg msg-to" v-if="v.to == '1'">
         <div class="content">
           <div class="time">{{ v.createTime?.split(" ")[1] }}</div>
-          <van-image fit="contain" :src="v.msg.picture?.url" />
+          <van-image fit="contain" :src="v.msg?.url" />
         </div>
         <van-image
           src="https://avatars.githubusercontent.com/u/111566162?s=96&v=4"
         />
       </div>
       <div class="msg msg-from" v-else>
+        <!-- {{ v.msg.picture.url }} -->
         <van-image
           src="https://cp.itheima.net/assets/avatar-doctor.6cf240f4.svg"
         />

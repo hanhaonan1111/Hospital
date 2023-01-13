@@ -71,7 +71,7 @@ onMounted(() => {
     charList.value.push(e);
     nextTick(() => {
       let dment = document.querySelector(".room-box");
-      dment?.scrollTo(0, dment.scrollHeight + 10);
+      dment?.scrollTo(0, dment.scrollHeight + 1002);
     });
   });
 
