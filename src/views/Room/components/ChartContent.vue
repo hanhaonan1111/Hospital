@@ -37,11 +37,24 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from "@vue/runtime-core";
+import { onMounted, watch } from "@vue/runtime-core";
 import Card from "./Card.vue";
 import RoomMeg from "./RoomMeg.vue";
 
 let props = defineProps<{ charList: any }>();
+
+watch(
+  () => props.charList,
+  () => {
+    console.log(props.charList);
+  }
+);
+onMounted(() => {
+  console.log("底部");
+
+  let dment = document.querySelector(".room-box");
+  dment?.scrollTo(0, dment.scrollHeight);
+});
 </script>
 
 <style lang="scss" scoped>

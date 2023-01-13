@@ -9,7 +9,7 @@
         >剩余时间：<van-count-down :time="status.countdown * 1000"
       /></span>
     </div>
-    <div class="end" v-else-if="status.status === 4">
+    <div class="end" v-else-if="status.status === 5">
       <van-icon name="passed" /> 已结束
     </div>
   </div>

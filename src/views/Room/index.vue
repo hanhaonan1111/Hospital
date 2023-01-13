@@ -1,7 +1,7 @@
 <template>
   <div class="room-box">
     <!-- 导航栏 -->
-    <nav-bar title="问诊室" />
+    <nav-bar title="问诊室" :onClickLeft="() => $router.back()" />
     <!-- 顶部Tab栏动态显示的状态 -->
     <room-status :status="status"></room-status>
     <!-- 聊天记录栏目 -->
@@ -67,9 +67,7 @@ onMounted(() => {
     charList.value.push(e);
     nextTick(() => {
       let dment = document.querySelector(".room-box");
-      // console.dir(dment.clientHeight + 10);
       dment?.scrollTo(0, dment.scrollHeight + 10);
-      // window.scrollTo(0, document.body.scrollHeight);
     });
   });
 
