@@ -10,7 +10,7 @@
       v-model="question"
       :disabled="status !== 3"
     ></van-field>
-    <van-uploader :preview-image="false">
+    <van-uploader :preview-image="false" :after-read="afterRead">
       <Icon name="consult-img" />
     </van-uploader>
   </div>
@@ -18,13 +18,24 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-
-let emit = defineEmits<{ (e: "EmitData", val: string): void }>();
+import { uploadImg } from "@/services/consult";
+import { closeToast, showLoadingToast, Toast } from "vant";
+let emit = defineEmits<{
+  (e: "EmitData", val: string): void;
+  (e: "sendImg", data: any): void;
+}>();
 defineProps<{ status: number }>();
 let question = ref("");
 async function QuestionDoctor() {
   await emit("EmitData", question.value);
   question.value = "";
+}
+async function afterRead(data: any) {
+  // 上传图片
+  let t = showLoadingToast("正在上传");
+  let { data: res } = await uploadImg(data.file);
+  closeToast();
+  emit("sendImg", res);
 }
 </script>
 

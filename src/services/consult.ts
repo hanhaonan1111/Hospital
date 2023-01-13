@@ -6,6 +6,7 @@ import http from '@/utils/http'
 import type {
     UploaderFileListItem,
 } from "vant/lib/uploader/types";
+
 export function getAllDepartment() {
     return http.get<ResAllDepartmentData>('/dep/all')
 }

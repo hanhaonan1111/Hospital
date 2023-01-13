@@ -7,7 +7,11 @@
     <!-- 聊天记录栏目 -->
     <ChartContent :charList="charList" />
     <!-- 底部输入框 -->
-    <RoomActions @EmitData="EmitData" :status="status.status" />
+    <RoomActions
+      @EmitData="EmitData"
+      :status="status.status"
+      @sendImg="sendImg"
+    />
   </div>
 </template>
 
@@ -83,6 +87,15 @@ function EmitData(val: string) {
       content: val,
     },
     msgType: 1,
+    to: "1",
+  };
+  socket.emit("sendChatMsg", query);
+}
+function sendImg(data: any) {
+  let query = {
+    from: "199",
+    msg: data,
+    msgType: 4,
     to: "1",
   };
   socket.emit("sendChatMsg", query);
