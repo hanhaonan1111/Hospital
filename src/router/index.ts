@@ -65,7 +65,13 @@ const router = createRouter({
       path: '/user/consult',
       component: () => import('@/views/OrderPage/index.vue'),
       meta: { title: '订单列表' }
+    },
+    {
+      path: '/consult/payDetail/:id',
+      component: () => import('@/views/OrderPage/components/ConcelPayDetail.vue'),
+      meta: { title: '订单详情' }
     }
+
   ],
 });
 

@@ -6,6 +6,7 @@ import { showImagePreview, showSuccessToast } from "vant";
 import { onMounted, reactive, ref } from "vue";
 import { lookMedision } from "@/services/consult";
 import { usePreviewImg } from "@/composable";
+import router from "@/router";
 let props = defineProps<{ type: Type }>();
 
 let params = reactive<Params>({
@@ -21,6 +22,7 @@ async function asyncLoadData(isCancel: boolean | undefined) {
   let {
     data: { rows },
   } = await orderList(params);
+  console.log(rows, "ROW");
   if (rows.length === 0) {
     finished.value = true;
     return;
@@ -92,6 +94,12 @@ let actions = (v: any) => {
     return [{ text: "删除订单", id: 2 }];
   }
 };
+function GoPay(v: any) {
+  console.log(v, "{}{}");
+}
+function goDetail(v: any) {
+  router.push("/consult/payDetail/" + v.id);
+}
 </script>
 
 <template>
@@ -102,7 +110,12 @@ let actions = (v: any) => {
       @load="Load"
       :finished="finished"
     >
-      <div class="consult-item" v-for="v in list" :key="v.id">
+      <div
+        class="consult-item"
+        v-for="v in list"
+        :key="v.id"
+        @click="goDetail(v)"
+      >
         <div class="head van-hairline--bottom">
           <img class="img" src="@/assets/avatar-doctor.svg" />
           <p>{{ v.docInfo?.name || "暂未分配医生" }}</p>
@@ -128,11 +141,12 @@ let actions = (v: any) => {
             >取消问诊
           </van-button>
           <van-button
+            @click="GoPay(v)"
             type="primary"
             plain
             size="small"
             round
-            :to="`/user/consult/${v.id}`"
+            :to="`/consult/payDetail/${v.id}`"
           >
             去支付
           </van-button>
