@@ -71,7 +71,7 @@ onBeforeMount(async () => {
           <span>需付款</span>
           <span>￥{{ info.payment }}</span>
         </div>
-        <van-button type="default" round @click="">取消问诊</van-button>
+        <van-button type="default" round>取消问诊</van-button>
         <van-button type="primary" round>继续支付</van-button>
       </div>
     </div>
