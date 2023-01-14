@@ -33,10 +33,12 @@ async function Load() {
   if (isAjax.value === false) {
     isAjax.value = true;
     params.current++;
-    await asyncLoadData();
-
-    loading.value = false;
-    isAjax.value = false;
+    try {
+      await asyncLoadData();
+    } finally {
+      loading.value = false;
+      isAjax.value = false;
+    }
   }
 }
 </script>
@@ -52,7 +54,7 @@ async function Load() {
       <div class="consult-item" v-for="v in list" :key="v.id">
         <div class="head van-hairline--bottom">
           <img class="img" src="@/assets/avatar-doctor.svg" />
-          <p>{{ v.docInfo?.name }}</p>
+          <p>{{ v.docInfo?.name || "暂未分配医生" }}</p>
           <span>{{ v.statusValue }}</span>
         </div>
         <div class="body">
@@ -69,21 +71,103 @@ async function Load() {
             <div class="body-value tip">{{ v.createTime }}</div>
           </div>
         </div>
-        <div class="foot">
-          <!-- 
+
+        <!-- 
           待支付：取消问诊+去支付
           待接诊：取消问诊+继续沟通
           咨询中：查看处方（如果开了）+继续沟通
           已完成：更多（查看处方，如果开了，删除订单）+问诊记录+（未评价?写评价:查看评价）
           已取消：删除订单+咨询其他医生 -->
 
-          <!-- 已完成 -->
+        <!-- 已完成 -->
 
+        <div class="foot" v-if="v.statusValue === '待支付'">
           <van-button class="gray" plain size="small" round
             >取消问诊</van-button
           >
-          <van-button type="primary" plain size="small" round
-            >去支付</van-button
+          <van-button
+            type="primary"
+            plain
+            size="small"
+            round
+            :to="`/user/consult/${v.id}`"
+          >
+            去支付
+          </van-button>
+        </div>
+        <div class="foot" v-if="v.statusValue === '待接诊'">
+          <van-button class="gray" plain size="small" round
+            >取消问诊</van-button
+          >
+          <van-button
+            type="primary"
+            plain
+            size="small"
+            round
+            :to="`/room?orderId=${v.id}`"
+          >
+            继续沟通
+          </van-button>
+        </div>
+        <div class="foot" v-if="v.statusValue === '咨询中'">
+          <van-button
+            v-if="v.prescriptionId"
+            class="gray"
+            plain
+            size="small"
+            round
+          >
+            查看处方
+          </van-button>
+          <van-button
+            type="primary"
+            plain
+            size="small"
+            round
+            :to="`/room?orderId=${v.id}`"
+          >
+            继续沟通
+          </van-button>
+        </div>
+        <div class="foot" v-if="v.statusValue === '已完成'">
+          <div class="more">
+            <van-popover
+              placement="top-start"
+              v-model:show="showPopover"
+              :actions="actions"
+              @select="onSelect"
+            >
+              <template #reference> 更多 </template>
+            </van-popover>
+          </div>
+          <van-button
+            class="gray"
+            plain
+            size="small"
+            round
+            :to="`/room?orderId=${item.id}`"
+          >
+            问诊记录
+          </van-button>
+          <van-button
+            v-if="!item.evaluateId"
+            type="primary"
+            plain
+            size="small"
+            round
+          >
+            去评价
+          </van-button>
+          <van-button v-else class="gray" plain size="small" round>
+            查看评价
+          </van-button>
+        </div>
+        <div class="foot" v-if="v.statusValue === '已取消'">
+          <van-button class="gray" plain size="small" round
+            >删除订单</van-button
+          >
+          <van-button type="primary" plain size="small" round to="/"
+            >咨询其他医生</van-button
           >
         </div>
       </div>
