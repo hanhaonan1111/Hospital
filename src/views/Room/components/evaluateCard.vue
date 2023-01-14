@@ -3,7 +3,7 @@
     <p class="title">医生服务评价</p>
     <p class="desc">我们会更加努力提升服务质量</p>
     <van-rate
-      :modelValue="evaluateData.msg.evaluateDoc.score || starts"
+      :modelValue="starts || evaluateData.msg.evaluateDoc.score"
       size="7vw"
       gutter="3vw"
       color="#FADB14"
