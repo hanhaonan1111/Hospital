@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { Type } from "@/enums/consult";
-import { orderList } from "@/services/consult";
+import { Cancel, DeleteOrder, orderList } from "@/services/consult";
 import type { Params, Row } from "@/types/orderList";
+import { showImagePreview, showSuccessToast } from "vant";
 import { onMounted, reactive, ref } from "vue";
-
+import { lookMedision } from "@/services/consult";
+import { usePreviewImg } from "@/composable";
 let props = defineProps<{ type: Type }>();
 
 let params = reactive<Params>({
@@ -14,7 +16,8 @@ let params = reactive<Params>({
 let list = ref<Row[]>([]);
 
 let finished = ref(false);
-async function asyncLoadData() {
+
+async function asyncLoadData(isCancel: boolean | undefined) {
   let {
     data: { rows },
   } = await orderList(params);
@@ -22,7 +25,11 @@ async function asyncLoadData() {
     finished.value = true;
     return;
   }
-  list.value = [...list.value, ...rows];
+  if (isCancel) {
+    list.value = [...rows];
+  } else {
+    list.value = [...list.value, ...rows];
+  }
 }
 
 let loading = ref(false);
@@ -41,6 +48,50 @@ async function Load() {
     }
   }
 }
+function fetchData(id: string) {
+  list.value = list.value.filter((v) => v.id !== id);
+}
+
+async function cancle(data: any) {
+  await Cancel(data.id);
+  showSuccessToast("已取消");
+  data.status = 5;
+  data.statusValue = "已取消";
+}
+
+async function Del(id: string) {
+  await DeleteOrder(id);
+  showSuccessToast("已删除!");
+  fetchData(id);
+}
+
+async function LookMedision(id: any) {
+  usePreviewImg(id);
+}
+let showPopover = ref("");
+
+function changeStatus(val: any) {
+  showPopover.value = val;
+}
+let medisionId = ref("");
+async function select(val: any) {
+  if (val.id === 1) {
+    usePreviewImg(val.prescriptionId.prescriptionId);
+  } else {
+    Del(showPopover.value);
+  }
+}
+
+let actions = (v: any) => {
+  if (v.prescriptionId) {
+    return [
+      { text: "查看处方", id: 1, prescriptionId: v },
+      { text: "删除订单", id: 2 },
+    ];
+  } else {
+    return [{ text: "删除订单", id: 2 }];
+  }
+};
 </script>
 
 <template>
@@ -72,19 +123,10 @@ async function Load() {
           </div>
         </div>
 
-        <!-- 
-          待支付：取消问诊+去支付
-          待接诊：取消问诊+继续沟通
-          咨询中：查看处方（如果开了）+继续沟通
-          已完成：更多（查看处方，如果开了，删除订单）+问诊记录+（未评价?写评价:查看评价）
-          已取消：删除订单+咨询其他医生 -->
-
-        <!-- 已完成 -->
-
         <div class="foot" v-if="v.statusValue === '待支付'">
-          <van-button class="gray" plain size="small" round
-            >取消问诊</van-button
-          >
+          <van-button class="gray" plain size="small" round @click="cancle(v)"
+            >取消问诊
+          </van-button>
           <van-button
             type="primary"
             plain
@@ -96,7 +138,12 @@ async function Load() {
           </van-button>
         </div>
         <div class="foot" v-if="v.statusValue === '待接诊'">
-          <van-button class="gray" plain size="small" round
+          <van-button
+            class="gray"
+            plain
+            size="small"
+            round
+            @click="() => cancle(v)"
             >取消问诊</van-button
           >
           <van-button
@@ -116,6 +163,7 @@ async function Load() {
             plain
             size="small"
             round
+            @click="LookMedision(v.prescriptionId)"
           >
             查看处方
           </van-button>
@@ -133,9 +181,10 @@ async function Load() {
           <div class="more">
             <van-popover
               placement="top-start"
-              v-model:show="showPopover"
-              :actions="actions"
-              @select="onSelect"
+              :show="showPopover === v.id"
+              @update:show="changeStatus(v.id)"
+              :actions="actions(v)"
+              @select="select"
             >
               <template #reference> 更多 </template>
             </van-popover>
@@ -145,12 +194,12 @@ async function Load() {
             plain
             size="small"
             round
-            :to="`/room?orderId=${item.id}`"
+            :to="`/room?orderId=${v.id}`"
           >
             问诊记录
           </van-button>
           <van-button
-            v-if="!item.evaluateId"
+            v-if="!v.evaluateId"
             type="primary"
             plain
             size="small"
@@ -163,7 +212,7 @@ async function Load() {
           </van-button>
         </div>
         <div class="foot" v-if="v.statusValue === '已取消'">
-          <van-button class="gray" plain size="small" round
+          <van-button class="gray" plain size="small" round @click="Del(v.id)"
             >删除订单</van-button
           >
           <van-button type="primary" plain size="small" round to="/"

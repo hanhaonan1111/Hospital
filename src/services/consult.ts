@@ -44,7 +44,7 @@ export function getOrderDetailAsync(id: string) {
     return http.get('/patient/consult/order/detail?orderId=' + id)
 }
 
-// 查看电子处方/patient/consult/prescription/6855105085374464
+// 查看电子处方 
 export function lookMedision(id: string) {
     return http.get('/patient/consult/prescription/' + id)
 }
@@ -64,3 +64,17 @@ export function orderList(params: Params) {
 
 }
 
+// 取消问诊
+export function Cancel(id: string) {
+    return http({
+        url: '/patient/order/cancel/' + id,
+        method: "PUT"
+    })
+}
+// 删除订单
+export function DeleteOrder(id: string) {
+    return http({
+        url: '/patient/order/' + id,
+        method: "DELETE"
+    })
+}
