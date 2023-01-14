@@ -12,6 +12,7 @@ let setConsultData = (init: IllnessType) => {
       title="极速问诊"
       right-text="问诊记录"
       :onClickLeft="() => $router.back()"
+      @on-click-right="() => $router.push('/user/consult')"
     ></nav-bar>
     <div class="fast-logo">
       <img class="img" src="@/assets/consult-fast.png" alt="" />

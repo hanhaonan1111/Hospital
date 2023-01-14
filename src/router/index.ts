@@ -57,10 +57,15 @@ const router = createRouter({
       path: '/room',
       component: () => import('@/views/Room/index.vue'),
       meta: { title: '问诊聊天室' },
-      beforeEnter(to, from, next) {
-        if (!to.query.payResult) { next('/user/consult') }
+      beforeEnter(to) {
+        if (to.query.payResult === 'false') return '/user/consult'
       }
     },
+    {
+      path: '/user/consult',
+      component: () => import('@/views/OrderPage/index.vue'),
+      meta: { title: '订单列表' }
+    }
   ],
 });
 

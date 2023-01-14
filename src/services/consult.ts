@@ -1,6 +1,7 @@
 import type {
     ResAllDepartmentData, Img, ParamsPay, PesPayData, PartialConsult, payImmediate
 } from '@/types/consult'
+import type { EmptyObject, Params, Response } from '@/types/orderList';
 import type { Patient } from '@/types/user'
 import http from '@/utils/http'
 import type {
@@ -54,4 +55,12 @@ export function submitEvaluate(data: any) {
     return http.post('/patient/order/evaluate', data)
 }
 
+export function orderList(params: Params) {
+    return http<any, EmptyObject>({
+        url: '/patient/consult/order/list',
+        method: "GET",
+        params
+    })
+
+}
 
