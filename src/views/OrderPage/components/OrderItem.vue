@@ -8,47 +8,86 @@ let props = defineProps<{ type: Type }>();
 
 let params = reactive<Params>({
   type: props.type,
-  current: 1,
+  current: 0,
   pageSize: 5,
 });
 let list = ref<Row[]>([]);
-onMounted(async () => {
+
+let finished = ref(false);
+async function asyncLoadData() {
   let {
     data: { rows },
   } = await orderList(params);
-  list.value = rows;
+  if (rows.length === 0) {
+    finished.value = true;
+    return;
+  }
+  list.value = [...list.value, ...rows];
+}
 
-  console.log(rows, "LIST");
-});
+let loading = ref(false);
+
+let isAjax = ref(false); // 是否有请求正在发送
+
+async function Load() {
+  if (isAjax.value === false) {
+    isAjax.value = true;
+    params.current++;
+    await asyncLoadData();
+
+    loading.value = false;
+    isAjax.value = false;
+  }
+}
 </script>
 
 <template>
   <div class="consult_list">
-    <div class="consult-item" v-for="v in list" :key="v.id">
-      <div class="head van-hairline--bottom">
-        <img class="img" src="@/assets/avatar-doctor.svg" />
-        <p>{{ v.docInfo?.name }}</p>
-        <span>{{ v.statusValue }}</span>
-      </div>
-      <div class="body">
-        <div class="body-row">
-          <div class="body-label">病情描述</div>
-          <div class="body-value">{{ v.illnessDesc }}</div>
+    <van-list
+      v-model:loading="loading"
+      finished-text="没有更多了"
+      @load="Load"
+      :finished="finished"
+    >
+      <div class="consult-item" v-for="v in list" :key="v.id">
+        <div class="head van-hairline--bottom">
+          <img class="img" src="@/assets/avatar-doctor.svg" />
+          <p>{{ v.docInfo?.name }}</p>
+          <span>{{ v.statusValue }}</span>
         </div>
-        <div class="body-row">
-          <div class="body-label">价格</div>
-          <div class="body-value">¥ {{ v.payment }}</div>
+        <div class="body">
+          <div class="body-row">
+            <div class="body-label">病情描述</div>
+            <div class="body-value">{{ v.illnessDesc }}</div>
+          </div>
+          <div class="body-row">
+            <div class="body-label">价格</div>
+            <div class="body-value">¥ {{ v.payment }}</div>
+          </div>
+          <div class="body-row">
+            <div class="body-label">创建时间</div>
+            <div class="body-value tip">{{ v.createTime }}</div>
+          </div>
         </div>
-        <div class="body-row">
-          <div class="body-label">创建时间</div>
-          <div class="body-value tip">{{ v.createTime }}</div>
+        <div class="foot">
+          <!-- 
+          待支付：取消问诊+去支付
+          待接诊：取消问诊+继续沟通
+          咨询中：查看处方（如果开了）+继续沟通
+          已完成：更多（查看处方，如果开了，删除订单）+问诊记录+（未评价?写评价:查看评价）
+          已取消：删除订单+咨询其他医生 -->
+
+          <!-- 已完成 -->
+
+          <van-button class="gray" plain size="small" round
+            >取消问诊</van-button
+          >
+          <van-button type="primary" plain size="small" round
+            >去支付</van-button
+          >
         </div>
       </div>
-      <div class="foot">
-        <van-button class="gray" plain size="small" round>取消问诊</van-button>
-        <van-button type="primary" plain size="small" round>去支付</van-button>
-      </div>
-    </div>
+    </van-list>
   </div>
 </template>
 
