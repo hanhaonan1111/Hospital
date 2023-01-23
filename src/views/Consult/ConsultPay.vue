@@ -80,15 +80,6 @@ onBeforeRouteLeave(() => {
   }
 });
 let payType = ref(true);
-async function payNowImmediate() {
-  let { data } = await payImmediateParams({
-    paymentMethod: 1,
-    orderId: orderId.value!,
-    payCallback: "http://localhost:5173/room",
-  });
-  let url = data.payUrl;
-  location.href = url;
-}
 </script>
 
 <template>
@@ -143,22 +134,11 @@ async function payNowImmediate() {
     :before-close="beforeClose"
     :close-on-popstate="false"
   >
-    <div class="pay-type">
-      <p class="amount">￥{{ actual }}</p>
-      <van-cell-group>
-        <van-cell title="支付宝支付">
-          <template #icon><Icon name="consult-alipay" /></template>
-          <template #extra
-            ><van-checkbox :disabled="true" v-model="payType"
-          /></template>
-        </van-cell>
-      </van-cell-group>
-      <div class="btn">
-        <van-button type="primary" round block @click="payNowImmediate"
-          >立即支付</van-button
-        >
-      </div>
-    </div>
+    <ali-pay
+      :orderId="orderId"
+      payCallback="http://localhost:5173/room"
+      :money="actual"
+    ></ali-pay>
   </van-action-sheet>
 </template>
 

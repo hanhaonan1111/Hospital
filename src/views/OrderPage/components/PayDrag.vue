@@ -39,16 +39,6 @@ async function payNow() {
   show.value = true;
 }
 let show = ref(false);
-async function immediatePay() {
-  console.log("A");
-
-  let { data } = await payImmediateParams({
-    orderId: orderIdMedicine.value,
-    payCallback: "http://localhost:5173/order/pay/result",
-    paymentMethod: 1,
-  });
-  location.href = data.payUrl;
-}
 </script>
 
 <template>
@@ -118,52 +108,17 @@ async function immediatePay() {
       @click="payNow"
     ></van-submit-bar>
   </div>
-  <van-popup
-    v-model:show="show"
-    position="bottom"
-    :style="{ width: '100%', height: '20%' }"
-  >
-    <div class="pay-type">
-      <van-cell-group>
-        <van-cell title="支付宝支付">
-          <template #icon><Icon name="consult-alipay" /></template>
-          <template #extra
-            ><van-checkbox :disabled="true" :modelValue="true"
-          /></template>
-        </van-cell>
-        <div class="btn">
-          <van-button type="primary" round block @click="immediatePay">
-            立即支付</van-button
-          >
-        </div>
-      </van-cell-group>
-    </div>
-  </van-popup>
+
+  <van-action-sheet v-model:show="show" position="bottom" title="选择支付方式">
+    <aliPay
+      :orderId="orderIdMedicine"
+      payCallback="http://localhost:5173/order/pay/result"
+      :money="info.actualPayment"
+    />
+  </van-action-sheet>
 </template>
 
 <style lang="scss" scoped>
-.pay-type {
-  .amount {
-    padding: 20px;
-    text-align: center;
-    font-size: 16px;
-    font-weight: bold;
-  }
-  .btn {
-    padding: 15px;
-  }
-  .van-cell {
-    align-items: center;
-    .cp-icon {
-      margin-right: 10px;
-      font-size: 18px;
-    }
-    .van-checkbox :deep(.van-checkbox__icon) {
-      font-size: 16px;
-    }
-  }
-}
-
 :deep(.van-nav-bar) {
   background-color: var(--cp-primary);
   .van-nav-bar__arrow,
