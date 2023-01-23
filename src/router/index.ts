@@ -72,6 +72,11 @@ const router = createRouter({
       meta: { title: '订单详情' }
     },
     {
+      path: '/order/:orderId',
+      meta: { title: '订单详情' },
+      component: () => import('@/views/OrderPage/components/DragDetail.vue')
+    },
+    {
       path: '/order/pay',
       component: () => import('@/views/OrderPage/components/PayDrag.vue'),
       meta: { title: '购买药品' }
@@ -81,7 +86,8 @@ const router = createRouter({
       meta: { title: '支付结果' },
       component: () => import('@/views/OrderPage/components/PayDragResult.vue')
 
-    }
+    },
+
 
   ],
 });

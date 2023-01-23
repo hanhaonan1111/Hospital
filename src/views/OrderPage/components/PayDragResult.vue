@@ -4,18 +4,15 @@ import type { OrderInfoMedicine } from "@/types/payMedicines";
 import { onBeforeMount } from "@vue/runtime-core";
 import { useRoute } from "vue-router";
 import { ref } from "vue";
+import { useDragInfo } from "@/composable";
 let orderId = useRoute().query.orderId as string;
-let detail = ref<OrderInfoMedicine>({} as OrderInfoMedicine);
-onBeforeMount(async () => {
-  let { data } = await getMedicineInfo(orderId);
-  detail.value = data;
-});
+let { detail } = useDragInfo(orderId);
 </script>
 
 <template>
   <div
     class="order-pay-result-page"
-    v-if="detail.status === 10 && orderId.length > 0"
+    v-if="detail && detail.status === 10 && orderId.length > 0"
   >
     <nav-bar title="药品支付结果" />
     <div class="result">
