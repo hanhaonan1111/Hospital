@@ -70,6 +70,11 @@ const router = createRouter({
       path: '/consult/payDetail/:id',
       component: () => import('@/views/OrderPage/components/ConcelPayDetail.vue'),
       meta: { title: '订单详情' }
+    },
+    {
+      path: '/order/pay',
+      component: () => import('@/views/OrderPage/components/PayDrag.vue'),
+      meta: { title: '购买药品' }
     }
 
   ],

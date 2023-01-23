@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 let emit =
-  defineEmits<{ (e: "onClickLeft"): void; (e: "onClickRight"): void }>();
+  defineEmits<{ (e?: "onClickLeft"): void; (e?: "onClickRight"): void }>();
 const onClickLeft = () => {
   emit("onClickLeft");
 };
