@@ -33,3 +33,30 @@ export type getAddressMediciens = {
     "county": string
 }
 export type resGetAddress = getAddressMediciens[]
+
+export type OrderInfoMedicine = {
+    "id": string,
+    "orderNo": string,
+    "type": number,
+    "createTime": string,
+    "prescriptionId": string,
+    "status": number,
+    "statusValue": string,
+    "cancelReason": string,
+    "cancelReasonValue": string,
+    "cancelProcess": string,
+    "medicines": medicine[],
+    "countdown": number,
+    "addressInfo": Partial<getAddressMediciens>,
+    "expressInfo": {
+        "content": string,
+        "time": string
+    },
+    "payTime": string,
+    "paymentMethod": number,
+    "payment": string,
+    "couponDeduction": number,
+    "expressFee": number,
+    "actualPayment": number,
+    "roomId": string
+}

@@ -1,17 +1,48 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { getMedicineInfo } from "@/services/medicines";
+import type { OrderInfoMedicine } from "@/types/payMedicines";
+import { onBeforeMount } from "@vue/runtime-core";
+import { useRoute } from "vue-router";
+import { ref } from "vue";
+let orderId = useRoute().query.orderId as string;
+let detail = ref<OrderInfoMedicine>({} as OrderInfoMedicine);
+onBeforeMount(async () => {
+  let { data } = await getMedicineInfo(orderId);
+  detail.value = data;
+});
+</script>
 
 <template>
-  <div class="order-pay-result-page">
-    <cp-nav-bar title="药品支付结果" />
+  <div
+    class="order-pay-result-page"
+    v-if="detail.status === 10 && orderId.length > 0"
+  >
+    <nav-bar title="药品支付结果" />
     <div class="result">
-      <van-icon name="checked" />
-      <p class="price">￥ 35.00</p>
-      <p class="status">支付成功</p>
-      <p class="tip">订单支付成功，已通知药房尽快发出， 请耐心等待~</p>
+      <van-icon name="clear" />
+      <p class="price">￥ {{ detail.actualPayment }}</p>
+      <p class="status">支付失败</p>
+      <p class="tip">订单支付失败，已通知药房尽快发出， 请耐心等待~</p>
       <div class="btn">
-        <van-button type="primary">查看订单</van-button>
-        <van-button>返回诊室</van-button>
+        <van-button type="primary" :to="`/order/${detail.id}`"
+          >查看订单</van-button
+        >
+        <van-button :to="'/room?orderId=' + detail?.roomId"
+          >返回诊室</van-button
+        >
       </div>
+    </div>
+  </div>
+  <div class="result" v-else>
+    <van-icon name="checked" />
+    <p class="price">￥ {{ detail?.actualPayment }}</p>
+    <p class="status">支付成功</p>
+    <p class="tip">订单支付成功，已通知药房尽快发出， 请耐心等待~</p>
+    <div class="btn">
+      <van-button type="primary" :to="`/order/${detail?.id}`"
+        >查看订单</van-button
+      >
+      <van-button :to="`/room?orderId=${detail?.roomId}`">返回诊室</van-button>
     </div>
   </div>
 </template>

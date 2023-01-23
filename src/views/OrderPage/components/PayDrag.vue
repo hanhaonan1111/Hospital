@@ -42,7 +42,7 @@ let show = ref(false);
 </script>
 
 <template>
-  <div class="order-pay-page" v-if="address && info">
+  <div class="order-pay-page" v-if="address.id && info.id">
     <nav-bar title="药品支付" @onClickLeft="$router.back()" />
     <div class="order-address">
       <p class="area">
