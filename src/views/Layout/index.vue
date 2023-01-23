@@ -36,6 +36,8 @@
 
 <style lang="scss" scoped>
 .layout-page {
+  height: 100vh;
+  overflow: scroll;
   :deep() {
     .van-tabbar-item {
       &__icon {
