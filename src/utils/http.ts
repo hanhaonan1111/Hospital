@@ -1,7 +1,8 @@
-import axios from 'axios'
+
 import { useUserStore } from '@/stores'
 import { showToast } from 'vant'
 import router from '@/router'
+import axios from 'axios'
 export const baseURL = 'https://consult-api.itheima.net/'
 const instance = axios.create({
     baseURL,
@@ -11,7 +12,7 @@ const instance = axios.create({
 
 
 instance.interceptors.request.use(
-    (config) => {
+    (config: any) => {
         let store = useUserStore()
         let user = store.user
         if (user?.token && config.headers) {
@@ -19,11 +20,11 @@ instance.interceptors.request.use(
         }
         return config
     },
-    (err) => Promise.reject(err)
+    (err: any) => Promise.reject(err)
 )
 
 instance.interceptors.response.use(
-    (res) => {
+    (res: any) => {
         // 约定
         if (res.data?.code !== 10000) {
             showToast(res.data?.message || '业务失败')
@@ -32,7 +33,7 @@ instance.interceptors.response.use(
         }
         return res.data
     },
-    (err) => {
+    (err: any) => {
         if (err.request.status === 401) {
             let store = useUserStore()
             store.clearUser()

@@ -8,3 +8,11 @@ export function getMedicineBypPescriptionId(id: string) {
 export function getAddress() {
     return http.get<resGetAddress>('/patient/order/address')
 }
+
+export function getOrderId(data: { id: string, addressId: string }) {
+    return http<any, { data: { id: string } }>({
+        url: '/patient/medicine/order',
+        method: "POST",
+        data
+    })
+}

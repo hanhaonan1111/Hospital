@@ -22,7 +22,7 @@ export interface medicineOrder {
 }
 
 // 收货地址
-export type getAddress = {
+export type getAddressMediciens = {
     "id": string,
     "receiver": string,
     "addressDetail": string,
@@ -32,4 +32,4 @@ export type getAddress = {
     "city": string,
     "county": string
 }
-export type resGetAddress = getAddress
+export type resGetAddress = getAddressMediciens[]

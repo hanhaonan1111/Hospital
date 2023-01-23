@@ -75,6 +75,12 @@ const router = createRouter({
       path: '/order/pay',
       component: () => import('@/views/OrderPage/components/PayDrag.vue'),
       meta: { title: '购买药品' }
+    },
+    {
+      path: '/order/pay/result',
+      meta: { title: '支付结果' },
+      component: () => import('@/views/OrderPage/components/PayDragResult.vue')
+
     }
 
   ],

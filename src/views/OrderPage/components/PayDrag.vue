@@ -2,26 +2,57 @@
 import { onBeforeMount, ref } from "vue";
 import { useRoute } from "vue-router";
 import { getMedicineBypPescriptionId, getAddress } from "@/services/medicines";
-import type { medicineOrder, resGetAddress } from "@/types/payMedicines";
+import type {
+  getAddressMediciens,
+  medicineOrder,
+  resGetAddress,
+} from "@/types/payMedicines";
+import { showToast } from "vant";
+import { getOrderId } from "@/services/medicines";
+import { payImmediateParams } from "@/services/consult";
+
 let route = useRoute();
 let info = ref<medicineOrder>({} as medicineOrder);
-let address = ref<resGetAddress>([] as resGetAddress);
+let address = ref<getAddressMediciens>({} as getAddressMediciens);
 
-let agree = ref(false); //用户协议
+let agree = ref(true); //用户协议
 
 onBeforeMount(async () => {
   let id = route.query.id as string;
   let { data } = await getMedicineBypPescriptionId(id);
   let { data: addressRes } = await getAddress();
   address.value = addressRes[0];
-  console.log();
-
   info.value = data;
 });
+let orderIdMedicine = ref("");
+async function payNow() {
+  if (!agree.value) {
+    showToast("勾选用户协议");
+    return;
+  }
+
+  let { data } = await getOrderId({
+    id: route.query.id as string,
+    addressId: address.value.id,
+  });
+  orderIdMedicine.value = data.id;
+  show.value = true;
+}
+let show = ref(false);
+async function immediatePay() {
+  console.log("A");
+
+  let { data } = await payImmediateParams({
+    orderId: orderIdMedicine.value,
+    payCallback: "http://localhost:5173/order/pay/result",
+    paymentMethod: 1,
+  });
+  location.href = data.payUrl;
+}
 </script>
 
 <template>
-  <div class="order-pay-page">
+  <div class="order-pay-page" v-if="address && info">
     <nav-bar title="药品支付" @onClickLeft="$router.back()" />
     <div class="order-address">
       <p class="area">
@@ -84,11 +115,55 @@ onBeforeMount(async () => {
       button-text="立即支付"
       button-type="primary"
       text-align="left"
+      @click="payNow"
     ></van-submit-bar>
   </div>
+  <van-popup
+    v-model:show="show"
+    position="bottom"
+    :style="{ width: '100%', height: '20%' }"
+  >
+    <div class="pay-type">
+      <van-cell-group>
+        <van-cell title="支付宝支付">
+          <template #icon><Icon name="consult-alipay" /></template>
+          <template #extra
+            ><van-checkbox :disabled="true" :modelValue="true"
+          /></template>
+        </van-cell>
+        <div class="btn">
+          <van-button type="primary" round block @click="immediatePay">
+            立即支付</van-button
+          >
+        </div>
+      </van-cell-group>
+    </div>
+  </van-popup>
 </template>
 
 <style lang="scss" scoped>
+.pay-type {
+  .amount {
+    padding: 20px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  .btn {
+    padding: 15px;
+  }
+  .van-cell {
+    align-items: center;
+    .cp-icon {
+      margin-right: 10px;
+      font-size: 18px;
+    }
+    .van-checkbox :deep(.van-checkbox__icon) {
+      font-size: 16px;
+    }
+  }
+}
+
 :deep(.van-nav-bar) {
   background-color: var(--cp-primary);
   .van-nav-bar__arrow,
