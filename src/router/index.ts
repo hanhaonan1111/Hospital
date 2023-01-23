@@ -82,12 +82,15 @@ const router = createRouter({
       meta: { title: '购买药品' }
     },
     {
+      path: '/order/logistics/:id',
+      meta: { title: '查看物流' },
+      component: () => import('@/views/OrderPage/components/DragExpress.vue')
+    },
+    {
       path: '/order/pay/result',
       meta: { title: '支付结果' },
       component: () => import('@/views/OrderPage/components/PayDragResult.vue')
-
     },
-
 
   ],
 });

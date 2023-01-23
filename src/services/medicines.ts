@@ -1,4 +1,4 @@
-import type { medicineOrder, resGetAddress, OrderInfoMedicine } from '@/types/payMedicines'
+import type { medicineOrder, resGetAddress, OrderInfoMedicine, expressInfo } from '@/types/payMedicines'
 import http from '@/utils/http'
 
 export function getMedicineBypPescriptionId(id: string) {
@@ -19,5 +19,9 @@ export function getOrderId(data: { id: string, addressId: string }) {
 
 export function getMedicineInfo(id: string) {
     return http.get<OrderInfoMedicine>('/patient/medicine/order/detail/' + id)
+}
+
+export function getExpressInfo(id: string) {
+    return http.get<expressInfo>(`/patient/order/${id}/logistics`)
 
 }

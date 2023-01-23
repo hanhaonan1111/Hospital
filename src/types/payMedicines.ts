@@ -60,3 +60,27 @@ export type OrderInfoMedicine = {
     "actualPayment": number,
     "roomId": string
 }
+//经纬度
+interface LanAndLon {
+    "latitude": string,
+    "longitude": string
+}
+// 快递信息
+export interface expressInfo {
+    "estimatedTime": string,
+    "name": 0,
+    "awbNo": string,
+    "status": string,
+    "statusValue": string,
+    "currentLocationInfo": LanAndLon,
+    "logisticsInfo": LanAndLon[],
+    "list": [
+        {
+            "id": string,
+            "content": string,
+            "createTime": string,
+            "status": string,
+            "statusValue": string
+        }
+    ]
+}

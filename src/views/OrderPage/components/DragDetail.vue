@@ -10,7 +10,10 @@ let { detail } = useDragInfo(route.params.orderId as string);
   <div class="order-detail-page" v-if="detail">
     <nav-bar title="药品订单详情" @on-click-left="$router.back()" />
     <div class="order-head">
-      <div class="card">
+      <div
+        class="card"
+        @click="() => $router.push('/order/logistics/' + detail?.id)"
+      >
         <div class="logistics">
           <p>{{ detail.expressInfo.content }}</p>
           <p>{{ detail.expressInfo.time }}</p>
