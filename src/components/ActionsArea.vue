@@ -62,7 +62,7 @@
         :actions="actions(info)"
         @select="select"
       >
-        <template #reference> 更多 </template>
+        <template #reference>更多</template>
       </van-popover>
     </div>
     <van-button
@@ -74,10 +74,27 @@
     >
       问诊记录
     </van-button>
-    <van-button v-if="!info.evaluateId" type="primary" plain size="small" round>
+    <van-button
+      v-if="
+        info.evaluateFlag != 1 ||
+        (info.evaluateId && info.evaluateId === undefined)
+      "
+      type="primary"
+      plain
+      size="small"
+      round
+      :to="`/room?orderId=${info.id}`"
+    >
       去评价
     </van-button>
-    <van-button v-else class="gray" plain size="small" round>
+    <van-button
+      v-else
+      class="gray"
+      plain
+      size="small"
+      round
+      :to="`/room?orderId=${info.id}`"
+    >
       查看评价
     </van-button>
   </div>
@@ -93,10 +110,14 @@
 
 <script setup lang="ts">
 import { usePreviewImg } from "@/composable";
+
 import { Cancel, DeleteOrder, orderList } from "@/services/consult";
 import type { Row } from "@/types/orderList";
 import { showImagePreview, showSuccessToast } from "vant";
 import { ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+let route = useRoute();
+let router = useRouter();
 defineProps<{ statusValue: string; info: any }>();
 
 async function cancle(data: any) {
@@ -121,7 +142,14 @@ function fetchData(id: string) {
 let medisionId = ref("");
 async function Del(id: string) {
   await DeleteOrder(id);
+  let detailId = route.params.id;
+  console.log(detailId);
+
   showSuccessToast("已删除!");
+  if (detailId) {
+    router.replace("/user/consult");
+    return;
+  }
   fetchData(id);
 }
 async function select(val: any) {

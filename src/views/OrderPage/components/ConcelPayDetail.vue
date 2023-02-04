@@ -2,6 +2,7 @@
 import { getOrderDetailAsync } from "@/services/consult";
 import { onBeforeMount, ref } from "vue";
 import { useRoute } from "vue-router";
+import ActionsArea from "@/components/ActionsArea.vue";
 let info = ref();
 onBeforeMount(async () => {
   let router = useRoute();
@@ -67,19 +68,36 @@ onBeforeMount(async () => {
         </van-cell-group>
       </div>
       <div class="detail-action van-hairline--top">
-        <div class="price">
+        <div class="price" v-if="info.statusValue === '待支付'">
           <span>需付款</span>
           <span>￥{{ info.payment }}</span>
         </div>
-
-        <van-button type="default" round>取消问诊</van-button>
-        <van-button type="primary" round>继续支付</van-button>
+        <div class="add">
+          <actions-area
+            :status-value="info.statusValue"
+            :info="info"
+          ></actions-area>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.add {
+  width: 100%;
+}
+:deep(.add) {
+  .foot {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    button {
+      height: 45px;
+      font-size: 17px;
+    }
+  }
+}
 .consult-detail-page {
   padding: 46px 0 110px 0;
 }
