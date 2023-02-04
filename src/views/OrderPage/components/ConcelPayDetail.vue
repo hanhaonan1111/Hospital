@@ -15,7 +15,7 @@ onBeforeMount(async () => {
 
 <template>
   <div class="consult-detail-page" v-if="info">
-    <nav-bar title="问诊详情" />
+    <nav-bar title="问诊详情" @click="$router.back()" />
     <div class="content">
       <div class="detail-head">
         <div class="text">
@@ -71,6 +71,7 @@ onBeforeMount(async () => {
           <span>需付款</span>
           <span>￥{{ info.payment }}</span>
         </div>
+
         <van-button type="default" round>取消问诊</van-button>
         <van-button type="primary" round>继续支付</van-button>
       </div>

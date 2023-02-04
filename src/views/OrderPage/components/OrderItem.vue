@@ -7,6 +7,7 @@ import { onMounted, reactive, ref } from "vue";
 import { lookMedision } from "@/services/consult";
 import { usePreviewImg } from "@/composable";
 import router from "@/router";
+import actionsArea from "@/components/ActionsArea.vue";
 let props = defineProps<{ type: Type }>();
 
 let params = reactive<Params>({
@@ -94,9 +95,7 @@ let actions = (v: any) => {
     return [{ text: "删除订单", id: 2 }];
   }
 };
-function GoPay(v: any) {
-  console.log(v, "{}{}");
-}
+
 function goDetail(v: any) {
   router.push("/consult/payDetail/" + v.id);
 }
@@ -110,18 +109,13 @@ function goDetail(v: any) {
       @load="Load"
       :finished="finished"
     >
-      <div
-        class="consult-item"
-        v-for="v in list"
-        :key="v.id"
-        @click="goDetail(v)"
-      >
-        <div class="head van-hairline--bottom">
+      <div class="consult-item" v-for="v in list" :key="v.id">
+        <div class="head van-hairline--bottom" @click="goDetail(v)">
           <img class="img" src="@/assets/avatar-doctor.svg" />
           <p>{{ v.docInfo?.name || "暂未分配医生" }}</p>
           <span>{{ v.statusValue }}</span>
         </div>
-        <div class="body">
+        <div class="body" @click="goDetail(v)">
           <div class="body-row">
             <div class="body-label">病情描述</div>
             <div class="body-value">{{ v.illnessDesc }}</div>
@@ -135,110 +129,16 @@ function goDetail(v: any) {
             <div class="body-value tip">{{ v.createTime }}</div>
           </div>
         </div>
-
-        <div class="foot" v-if="v.statusValue === '待支付'">
-          <van-button class="gray" plain size="small" round @click="cancle(v)"
-            >取消问诊
-          </van-button>
-          <van-button
-            @click="GoPay(v)"
-            type="primary"
-            plain
-            size="small"
-            round
-            :to="`/consult/payDetail/${v.id}`"
-          >
-            去支付
-          </van-button>
-        </div>
-        <div class="foot" v-if="v.statusValue === '待接诊'">
-          <van-button
-            class="gray"
-            plain
-            size="small"
-            round
-            @click="() => cancle(v)"
-            >取消问诊</van-button
-          >
-          <van-button
-            type="primary"
-            plain
-            size="small"
-            round
-            :to="`/room?orderId=${v.id}`"
-          >
-            继续沟通
-          </van-button>
-        </div>
-        <div class="foot" v-if="v.statusValue === '咨询中'">
-          <van-button
-            v-if="v.prescriptionId"
-            class="gray"
-            plain
-            size="small"
-            round
-            @click="LookMedision(v.prescriptionId)"
-          >
-            查看处方
-          </van-button>
-          <van-button
-            type="primary"
-            plain
-            size="small"
-            round
-            :to="`/room?orderId=${v.id}`"
-          >
-            继续沟通
-          </van-button>
-        </div>
-        <div class="foot" v-if="v.statusValue === '已完成'">
-          <div class="more">
-            <van-popover
-              placement="top-start"
-              :show="showPopover === v.id"
-              @update:show="changeStatus(v.id)"
-              :actions="actions(v)"
-              @select="select"
-            >
-              <template #reference> 更多 </template>
-            </van-popover>
-          </div>
-          <van-button
-            class="gray"
-            plain
-            size="small"
-            round
-            :to="`/room?orderId=${v.id}`"
-          >
-            问诊记录
-          </van-button>
-          <van-button
-            v-if="!v.evaluateId"
-            type="primary"
-            plain
-            size="small"
-            round
-          >
-            去评价
-          </van-button>
-          <van-button v-else class="gray" plain size="small" round>
-            查看评价
-          </van-button>
-        </div>
-        <div class="foot" v-if="v.statusValue === '已取消'">
-          <van-button class="gray" plain size="small" round @click="Del(v.id)"
-            >删除订单</van-button
-          >
-          <van-button type="primary" plain size="small" round to="/"
-            >咨询其他医生</van-button
-          >
-        </div>
+        <actions-area
+          :statusValue="v.statusValue ? v.statusValue : ''"
+          :info="v"
+        ></actions-area>
       </div>
     </van-list>
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss" >
 .consult_list {
   height: 570px;
   overflow: scroll;
