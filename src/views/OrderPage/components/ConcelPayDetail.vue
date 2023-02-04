@@ -85,8 +85,9 @@ onBeforeMount(async () => {
 
 <style lang="scss" scoped>
 .add {
-  width: 100%;
+  width: 70%;
 }
+
 :deep(.add) {
   .foot {
     display: flex;
@@ -220,7 +221,7 @@ onBeforeMount(async () => {
   padding: 0 15px;
   box-sizing: border-box;
   .price {
-    flex: 1;
+    width: 30%;
     > span:last-child {
       font-size: 18px;
       color: var(--cp-price);
